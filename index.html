@@ -4,244 +4,174 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="theme-color" content="#0b0b0d" />
-
 <title>SnapCRM Prototype</title>
-
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 
 <style>
-:root {
-  color-scheme: dark;
-  --bg: #0b0b0d;
-  --card: #17171c;
-  --card2: #101014;
-  --line: #2d2d34;
-  --muted: #999aa3;
-  --good: #88e0a1;
-  --warn: #ffd36c;
-  --red: #ff8d91;
+:root{
+  color-scheme:dark;
+  --bg:#0b0b0d;
+  --card:#17171c;
+  --line:#2d2d34;
+  --muted:#999aa3;
+  --good:#8ee6a6;
+  --warn:#ffd36c;
+  --bad:#ff9297;
 }
-
-* {
-  box-sizing: border-box;
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--bg);
+  color:#fff;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif
 }
-
-body {
-  margin: 0;
-  background: var(--bg);
-  color: white;
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+main{width:min(850px,100%);margin:auto;padding:22px 15px 70px}
+h1{margin:4px 0;font-size:31px;letter-spacing:-.04em}
+.subtitle{color:var(--muted);line-height:1.45;margin-bottom:18px}
+.card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:16px;
+  margin:12px 0
 }
-
-main {
-  width: min(850px, 100%);
-  margin: auto;
-  padding: 22px 15px 70px;
+.row{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+.fileButton,button{
+  appearance:none;
+  border:0;
+  border-radius:13px;
+  padding:13px 15px;
+  font-size:15px;
+  font-weight:700;
+  background:#fff;
+  color:#111;
+  cursor:pointer
 }
-
-h1 {
-  margin: 4px 0;
-  font-size: 31px;
-  letter-spacing: -0.04em;
+button.secondary{background:#292930;color:#fff}
+button.danger{background:#422326;color:#ffd8da}
+input[type=file]{position:absolute;left:-10000px}
+#preview{
+  display:none;
+  width:100%;
+  max-height:410px;
+  object-fit:contain;
+  border-radius:13px;
+  margin-top:14px;
+  background:#050507
 }
-
-.subtitle {
-  color: var(--muted);
-  line-height: 1.45;
-  margin-bottom: 18px;
+.statusBox{
+  margin-top:12px;
+  border:1px solid var(--line);
+  border-radius:13px;
+  padding:12px;
+  background:#111116;
+  font-size:14px;
+  line-height:1.45
 }
-
-.card {
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 18px;
-  padding: 16px;
-  margin: 12px 0;
+.statusGood{color:var(--good)}
+.statusWarn{color:var(--warn)}
+.statusBad{color:var(--bad)}
+.progress{
+  width:100%;
+  height:6px;
+  background:#25252b;
+  border-radius:999px;
+  overflow:hidden;
+  margin-top:9px;
+  display:none
 }
-
-.row {
-  display: flex;
-  gap: 9px;
-  flex-wrap: wrap;
+.progressBar{
+  height:100%;
+  width:0%;
+  background:#fff;
+  transition:width .15s ease
 }
-
-button,
-.fileButton {
-  appearance: none;
-  border: none;
-  border-radius: 13px;
-  padding: 13px 15px;
-  font-size: 15px;
-  font-weight: 700;
-  background: white;
-  color: #111;
+.contactCard{
+  border:1px solid var(--line);
+  background:#111116;
+  border-radius:15px;
+  padding:14px;
+  margin-top:10px;
+  cursor:pointer
 }
-
-button.secondary {
-  background: #292930;
-  color: white;
+.contactCard:active{transform:scale(.995)}
+.contactTop{display:flex;justify-content:space-between;gap:10px}
+.contactName{font-size:18px;font-weight:750}
+.contactCompany{color:var(--muted);font-size:13px;margin-top:3px}
+.next{margin-top:10px;font-size:14px}
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  border-radius:999px;
+  background:#292930;
+  color:#ddd;
+  font-size:11px
 }
+.empty{color:var(--muted);padding:12px 0}
+.small{font-size:12px;color:var(--muted);line-height:1.45}
 
-button.danger {
-  background: #422326;
-  color: #ffd8da;
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.72);
+  display:none;
+  align-items:flex-end;
+  justify-content:center;
+  padding:12px;
+  z-index:99
 }
-
-input[type="file"] {
-  position: absolute;
-  left: -10000px;
+.modal.open{display:flex}
+.sheet{
+  width:min(760px,100%);
+  max-height:88vh;
+  overflow:auto;
+  background:#17171c;
+  border:1px solid var(--line);
+  border-radius:22px 22px 16px 16px;
+  padding:18px
 }
-
-input[type="text"],
-input[type="email"],
-input[type="tel"],
-textarea {
-  width: 100%;
-  background: var(--card2);
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  color: white;
-  padding: 12px;
-  font-size: 16px;
+.sheet h2{margin:0 0 4px}
+.detailLabel{
+  color:var(--muted);
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  margin-top:15px
 }
-
-textarea {
-  min-height: 110px;
-  resize: vertical;
+.detailValue{
+  font-size:15px;
+  line-height:1.45;
+  margin-top:4px;
+  white-space:pre-wrap;
+  word-break:break-word
 }
-
-label.fieldLabel {
-  display: block;
-  color: var(--muted);
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  margin: 13px 0 6px;
-}
-
-#preview {
-  width: 100%;
-  max-height: 430px;
-  object-fit: contain;
-  display: none;
-  border-radius: 13px;
-  margin-top: 14px;
-  background: #050507;
-}
-
-.status {
-  color: var(--muted);
-  font-size: 14px;
-  min-height: 22px;
-  margin-top: 12px;
-}
-
-.good {
-  color: var(--good);
-}
-
-.warning {
-  color: var(--warn);
-}
-
-.nextStep {
-  margin-top: 12px;
-  border: 1px solid #40404a;
-  background: #111116;
-  border-radius: 14px;
-  padding: 14px;
-}
-
-.nextStepTitle {
-  font-size: 12px;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: .07em;
-}
-
-.nextStepText {
-  font-size: 18px;
-  margin-top: 7px;
-  font-weight: 650;
-}
-
-.nextStepReason {
-  color: var(--muted);
-  font-size: 13px;
-  margin-top: 6px;
-}
-
-.contact {
-  border-top: 1px solid var(--line);
-  padding: 14px 0;
-}
-
-.contact:first-child {
-  border-top: 0;
-}
-
-.contactName {
-  font-size: 18px;
-  font-weight: 700;
-}
-
-.contactMeta {
-  color: var(--muted);
-  font-size: 13px;
-  line-height: 1.5;
-  margin-top: 4px;
-}
-
-.contactNext {
-  margin-top: 7px;
-  font-size: 14px;
-}
-
-.badge {
-  display: inline-block;
-  padding: 4px 7px;
-  border-radius: 999px;
-  background: #292930;
-  font-size: 11px;
-  margin-top: 7px;
-}
-
-.hidden {
-  display: none;
-}
-
-.small {
-  font-size: 12px;
-  color: var(--muted);
-  line-height: 1.45;
-}
-
-details {
-  margin-top: 14px;
-}
-
-summary {
-  cursor: pointer;
-  color: var(--muted);
+.raw{
+  background:#0d0d10;
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:12px;
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  font-size:12px;
+  white-space:pre-wrap;
+  max-height:260px;
+  overflow:auto
 }
 </style>
 </head>
 
 <body>
-
 <main>
 
 <h1>SnapCRM</h1>
 
 <div class="subtitle">
-  Photograph a lead on your computer screen. SnapCRM reads the screen,
-  builds the contact, and determines what you should do next.
+  Photograph a lead on your computer screen. SnapCRM reads it,
+  creates the record, and decides the next action automatically.
 </div>
 
 <div class="card">
 
   <div class="row">
-
     <label class="fileButton" for="photo">
       Take / Choose Photo
     </label>
@@ -252,96 +182,17 @@ summary {
       accept="image/*"
       capture="environment"
     />
-
-    <button
-      id="analyzeButton"
-      class="secondary"
-    >
-      Analyze Screen
-    </button>
-
   </div>
 
-  <div id="fileStatus" class="status">
-    No image selected.
+  <img id="preview" alt="Selected image preview" />
+
+  <div id="status" class="statusBox">
+    Waiting for an image.
   </div>
 
-  <img id="preview" />
-
-  <div id="ocrStatus" class="status"></div>
-
-</div>
-
-
-<div id="contactEditor" class="card hidden">
-
-  <h2 style="margin-top:0">
-    New CRM Record
-  </h2>
-
-  <label class="fieldLabel">Name</label>
-  <input id="name" type="text" />
-
-  <label class="fieldLabel">Company</label>
-  <input id="company" type="text" />
-
-  <label class="fieldLabel">Title</label>
-  <input id="title" type="text" />
-
-  <label class="fieldLabel">Email</label>
-  <input id="email" type="email" />
-
-  <label class="fieldLabel">Phone</label>
-  <input id="phone" type="tel" />
-
-  <label class="fieldLabel">Notes</label>
-  <textarea id="notes"></textarea>
-
-  <div class="nextStep">
-
-    <div class="nextStepTitle">
-      Recommended next step
-    </div>
-
-    <div
-      id="nextStepText"
-      class="nextStepText"
-    ></div>
-
-    <div
-      id="nextStepReason"
-      class="nextStepReason"
-    ></div>
-
+  <div id="progress" class="progress">
+    <div id="progressBar" class="progressBar"></div>
   </div>
-
-  <div class="row" style="margin-top:15px">
-
-    <button id="saveContact">
-      Save Contact
-    </button>
-
-    <button
-      id="recalculate"
-      class="secondary"
-    >
-      Recalculate Next Step
-    </button>
-
-  </div>
-
-  <details>
-
-    <summary>
-      Raw OCR text
-    </summary>
-
-    <textarea
-      id="rawOCR"
-      style="margin-top:10px"
-    ></textarea>
-
-  </details>
 
 </div>
 
@@ -349,38 +200,27 @@ summary {
 <div class="card">
 
   <div class="row" style="justify-content:space-between">
+    <h2 style="margin:0">CRM Records</h2>
 
-    <h2 style="margin:0">
-      Contacts
-    </h2>
-
-    <button
-      id="exportCSV"
-      class="secondary"
-    >
+    <button id="exportCSV" class="secondary">
       Export CSV
     </button>
-
   </div>
 
-  <div id="contacts"></div>
+  <div id="records"></div>
 
 </div>
 
 
 <div class="card">
 
-  <button
-    id="clearContacts"
-    class="danger"
-  >
+  <button id="clearAll" class="danger">
     Clear All Test Data
   </button>
 
   <p class="small">
-    Prototype only. OCR happens inside your browser. The OCR engine is downloaded
-    from a public CDN, but this prototype does not intentionally upload your image
-    to a server.
+    Prototype only. OCR runs in your browser using Tesseract.js.
+    Records are stored in this browser's local storage.
   </p>
 
 </div>
@@ -388,22 +228,76 @@ summary {
 </main>
 
 
+<div id="modal" class="modal">
+
+  <div class="sheet">
+
+    <div class="row" style="justify-content:space-between">
+
+      <div>
+        <h2 id="detailName">Record</h2>
+        <div id="detailCompany" class="contactCompany"></div>
+      </div>
+
+      <button id="closeModal" class="secondary">
+        Close
+      </button>
+
+    </div>
+
+    <div class="detailLabel">Title</div>
+    <div id="detailTitle" class="detailValue"></div>
+
+    <div class="detailLabel">Email</div>
+    <div id="detailEmail" class="detailValue"></div>
+
+    <div class="detailLabel">Phone</div>
+    <div id="detailPhone" class="detailValue"></div>
+
+    <div class="detailLabel">Recommended next step</div>
+    <div id="detailNext" class="detailValue"></div>
+
+    <div class="detailLabel">Why</div>
+    <div id="detailReason" class="detailValue"></div>
+
+    <div class="detailLabel">Notes</div>
+    <div id="detailNotes" class="detailValue"></div>
+
+    <div class="detailLabel">Raw OCR</div>
+    <div id="detailOCR" class="raw"></div>
+
+    <div class="row" style="margin-top:16px">
+
+      <button id="deleteRecord" class="danger">
+        Delete Record
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
 <script>
 
-let imageDataURL = null;
-let currentNextStep = "";
-let currentNextReason = "";
+const STORAGE_KEY = "snapcrm_contacts_v2";
 
-const STORAGE_KEY = "snapcrm_contacts_v1";
+let currentDetailId = null;
+let currentObjectURL = null;
 
-
-/* =========================================================
-   BASIC HELPERS
-========================================================= */
 
 function $(id) {
   return document.getElementById(id);
 }
+
+
+function esc(text) {
+  const div = document.createElement("div");
+  div.textContent = text || "";
+  return div.innerHTML;
+}
+
 
 function clean(text) {
   return (text || "")
@@ -411,9 +305,10 @@ function clean(text) {
     .trim();
 }
 
+
 function getLines(text) {
 
-  return text
+  return (text || "")
     .split(/\r?\n/)
     .map(line => line.trim())
     .filter(line => line.length > 1);
@@ -421,206 +316,100 @@ function getLines(text) {
 }
 
 
-/* =========================================================
-   IMAGE SELECTION
-========================================================= */
+function loadRecords() {
 
-$("photo").addEventListener("change", async function () {
+  try {
 
-  const file =
-    this.files &&
-    this.files[0];
+    return JSON.parse(
+      localStorage.getItem(STORAGE_KEY)
+    ) || [];
 
-  if (!file) {
+  } catch {
 
-    $("fileStatus").textContent =
-      "No image selected.";
+    return [];
+
+  }
+
+}
+
+
+function saveRecords(records) {
+
+  localStorage.setItem(
+    STORAGE_KEY,
+    JSON.stringify(records)
+  );
+
+}
+
+
+function setStatus(message, type = "") {
+
+  const element = $("status");
+
+  element.className =
+    "statusBox";
+
+  if (type === "good") {
+    element.classList.add("statusGood");
+  }
+
+  if (type === "warn") {
+    element.classList.add("statusWarn");
+  }
+
+  if (type === "bad") {
+    element.classList.add("statusBad");
+  }
+
+  element.textContent =
+    message;
+
+}
+
+
+function setProgress(value) {
+
+  const wrap =
+    $("progress");
+
+  const bar =
+    $("progressBar");
+
+  if (value === null) {
+
+    wrap.style.display =
+      "none";
+
+    bar.style.width =
+      "0%";
 
     return;
 
   }
 
-  $("fileStatus").textContent =
-    "Loaded: " + file.name;
+  wrap.style.display =
+    "block";
 
-  const reader =
-    new FileReader();
-
-  reader.onload =
-    function (event) {
-
-      imageDataURL =
-        event.target.result;
-
-      $("preview").src =
-        imageDataURL;
-
-      $("preview").style.display =
-        "block";
-
-    };
-
-  reader.readAsDataURL(file);
-
-});
-
-
-/* =========================================================
-   OCR
-========================================================= */
-
-$("analyzeButton")
-.addEventListener(
-  "click",
-  async function () {
-
-    if (!imageDataURL) {
-
-      alert(
-        "Take or choose a photo first."
-      );
-
-      return;
-
-    }
-
-    try {
-
-      $("ocrStatus").textContent =
-        "Loading OCR engine…";
-
-      const worker =
-        await Tesseract.createWorker(
-          "eng",
-          1,
-          {
-            logger: message => {
-
-              if (
-                message.status ===
-                "recognizing text"
-              ) {
-
-                $("ocrStatus")
-                .textContent =
-                "Reading screen… "
-                +
-                Math.round(
-                  message.progress * 100
-                )
-                +
-                "%";
-
-              }
-
-            }
-          }
-        );
-
-      const result =
-        await worker.recognize(
-          imageDataURL
-        );
-
-      await worker.terminate();
-
-      const text =
-        result.data.text || "";
-
-      $("rawOCR").value =
-        text;
-
-      $("ocrStatus")
-      .innerHTML =
-        '<span class="good">OCR complete.</span>';
-
-      processOCR(text);
-
-    }
-
-    catch (error) {
-
-      $("ocrStatus")
-      .innerHTML =
-        '<span class="warning">'
-        +
-        "OCR failed: "
-        +
-        error.message
-        +
-        "</span>";
-
-    }
-
-  }
-);
-
-
-/* =========================================================
-   CONTACT PARSER
-========================================================= */
-
-function processOCR(text) {
-
-  const lines =
-    getLines(text);
-
-  const lower =
-    text.toLowerCase();
-
-
-  const email =
-    extractEmail(text);
-
-  const phone =
-    extractPhone(text);
-
-  const name =
-    extractName(lines);
-
-  const company =
-    extractCompany(lines, email);
-
-  const title =
-    extractTitle(lines);
-
-
-  $("name").value =
-    name;
-
-  $("company").value =
-    company;
-
-  $("title").value =
-    title;
-
-  $("email").value =
-    email;
-
-  $("phone").value =
-    phone;
-
-  $("notes").value =
-    buildNotes(text);
-
-
-  determineNextStep(text);
-
-  $("contactEditor")
-    .classList
-    .remove("hidden");
+  bar.style.width =
+    Math.max(
+      0,
+      Math.min(100, value)
+    )
+    + "%";
 
 }
 
 
-/* =========================================================
-   EMAIL EXTRACTION
-========================================================= */
+/* -----------------------------------------
+   FIELD EXTRACTION
+----------------------------------------- */
 
 function extractEmail(text) {
 
   const match =
-    text.match(
+    (text || "")
+    .match(
       /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i
     );
 
@@ -631,50 +420,55 @@ function extractEmail(text) {
 }
 
 
-/* =========================================================
-   PHONE EXTRACTION
-========================================================= */
-
 function extractPhone(text) {
 
-  const matches =
-    text.match(
+  const match =
+    (text || "")
+    .match(
       /(?:\+?1[\s.-]?)?(?:\(?\d{3}\)?[\s.-]?)\d{3}[\s.-]?\d{4}/g
     );
 
-  if (!matches) {
-    return "";
-  }
-
-  return matches[0];
+  return match
+    ? match[0]
+    : "";
 
 }
 
 
-/* =========================================================
-   NAME EXTRACTION
-========================================================= */
+function looksLikeCompany(text) {
+
+  return /\b(LLC|Inc\.?|Incorporated|Corp\.?|Corporation|Company|Co\.?|Ltd\.?|Group|Partners|Agency|Solutions|Services|Health|Insurance|Benefits|Technologies|Consulting|Associates)\b/i
+    .test(text || "");
+
+}
+
 
 function extractName(lines) {
 
-  const labelPatterns = [
+  const labeledPatterns = [
+
     /^name\s*[:\-]\s*(.+)$/i,
-    /^contact\s*[:\-]\s*(.+)$/i,
-    /^contact name\s*[:\-]\s*(.+)$/i,
+
+    /^contact(?: name)?\s*[:\-]\s*(.+)$/i,
+
     /^lead\s*[:\-]\s*(.+)$/i
+
   ];
+
 
   for (const line of lines) {
 
-    for (
-      const pattern of labelPatterns
-    ) {
+    for (const pattern of labeledPatterns) {
 
       const match =
         line.match(pattern);
 
       if (match) {
-        return clean(match[1]);
+
+        return clean(
+          match[1]
+        );
+
       }
 
     }
@@ -682,27 +476,16 @@ function extractName(lines) {
   }
 
 
-  /*
-    Fallback:
-    look for likely human names.
-
-    Two to four capitalized words.
-  */
-
   for (const line of lines) {
 
     if (
-      /^[A-Z][a-z]+(?:\s+[A-Z][a-z]+){1,3}$/
-      .test(line)
+      line.length < 60 &&
+      /^[A-Z][A-Za-z'.-]+(?:\s+[A-Z][A-Za-z'.-]+){1,3}$/
+      .test(line) &&
+      !looksLikeCompany(line)
     ) {
 
-      if (
-        !looksLikeCompany(line)
-      ) {
-
-        return line;
-
-      }
+      return line;
 
     }
 
@@ -713,34 +496,33 @@ function extractName(lines) {
 }
 
 
-/* =========================================================
-   COMPANY EXTRACTION
-========================================================= */
+function extractCompany(lines, email) {
 
-function extractCompany(
-  lines,
-  email
-) {
+  const labeledPatterns = [
 
-  const labels = [
     /^company\s*[:\-]\s*(.+)$/i,
+
     /^account\s*[:\-]\s*(.+)$/i,
+
     /^organization\s*[:\-]\s*(.+)$/i,
+
     /^employer\s*[:\-]\s*(.+)$/i
+
   ];
+
 
   for (const line of lines) {
 
-    for (
-      const pattern of labels
-    ) {
+    for (const pattern of labeledPatterns) {
 
       const match =
         line.match(pattern);
 
       if (match) {
 
-        return clean(match[1]);
+        return clean(
+          match[1]
+        );
 
       }
 
@@ -749,13 +531,10 @@ function extractCompany(
   }
 
 
-  /*
-    Look for obvious business suffixes.
-  */
-
   for (const line of lines) {
 
     if (
+      line.length < 100 &&
       looksLikeCompany(line)
     ) {
 
@@ -766,41 +545,35 @@ function extractCompany(
   }
 
 
-  /*
-    Last fallback:
-    convert the email domain into
-    something readable.
-  */
-
   if (email) {
 
     const domain =
-      email
-        .split("@")[1]
-        ?.split(".")[0];
+      (email.split("@")[1] || "")
+      .split(".")[0] || "";
+
+    const commonDomains = [
+      "gmail",
+      "yahoo",
+      "outlook",
+      "hotmail",
+      "icloud",
+      "aol"
+    ];
+
 
     if (
       domain &&
-      ![
-        "gmail",
-        "yahoo",
-        "outlook",
-        "hotmail",
-        "icloud"
-      ].includes(
+      !commonDomains.includes(
         domain.toLowerCase()
       )
     ) {
 
       return domain
-        .replace(
-          /[-_]/g,
-          " "
-        )
+        .replace(/[-_]/g, " ")
         .replace(
           /\b\w/g,
-          char =>
-            char.toUpperCase()
+          character =>
+            character.toUpperCase()
         );
 
     }
@@ -812,52 +585,9 @@ function extractCompany(
 }
 
 
-function looksLikeCompany(text) {
-
-  return /\b(
-    LLC|
-    Inc|
-    Incorporated|
-    Corp|
-    Corporation|
-    Company|
-    Co\.|
-    Ltd|
-    Group|
-    Partners|
-    Agency|
-    Solutions|
-    Services|
-    Health|
-    Insurance|
-    Benefits|
-    Technologies|
-    Consulting
-  )\b/ix.test(text);
-
-}
-
-
-/*
-  Safari doesn't support regex x flag.
-  Replace function above with JS-compatible version.
-*/
-
-function looksLikeCompany(text) {
-
-  return /\b(LLC|Inc|Incorporated|Corp|Corporation|Company|Co\.|Ltd|Group|Partners|Agency|Solutions|Services|Health|Insurance|Benefits|Technologies|Consulting)\b/i
-    .test(text);
-
-}
-
-
-/* =========================================================
-   TITLE EXTRACTION
-========================================================= */
-
 function extractTitle(lines) {
 
-  const labelPatterns = [
+  const labeledPatterns = [
 
     /^title\s*[:\-]\s*(.+)$/i,
 
@@ -867,11 +597,10 @@ function extractTitle(lines) {
 
   ];
 
+
   for (const line of lines) {
 
-    for (
-      const pattern of labelPatterns
-    ) {
+    for (const pattern of labeledPatterns) {
 
       const match =
         line.match(pattern);
@@ -910,30 +639,25 @@ function extractTitle(lines) {
     "ceo",
     "cfo",
     "coo",
-    "hr",
-    "human resources"
+    "human resources",
+    "sales"
 
   ];
 
+
   for (const line of lines) {
 
-    const lower =
-      line.toLowerCase();
-
     if (
+      line.length < 90 &&
       titleWords.some(
         word =>
-          lower.includes(word)
+          line
+          .toLowerCase()
+          .includes(word)
       )
     ) {
 
-      if (
-        line.length < 80
-      ) {
-
-        return line;
-
-      }
+      return line;
 
     }
 
@@ -944,44 +668,29 @@ function extractTitle(lines) {
 }
 
 
-/* =========================================================
-   NOTES
-========================================================= */
+/* -----------------------------------------
+   NEXT STEP ENGINE
+----------------------------------------- */
 
-function buildNotes(text) {
+function includesAny(text, phrases) {
 
-  /*
-    For prototype:
-    preserve a short chunk of OCR
-    so nothing useful disappears.
-  */
-
-  return clean(text)
-    .slice(0, 900);
+  return phrases.some(
+    phrase =>
+      text.includes(phrase)
+  );
 
 }
 
 
-/* =========================================================
-   RULE-BASED NEXT STEP ENGINE
-========================================================= */
-
 function determineNextStep(
-  textOverride
+  text,
+  email,
+  phone
 ) {
 
   const source =
-    (
-      textOverride ||
-      $("rawOCR").value ||
-      ""
-    )
+    (text || "")
     .toLowerCase();
-
-
-  /*
-    Highest priority rules first.
-  */
 
 
   if (
@@ -996,12 +705,13 @@ function determineNextStep(
     )
   ) {
 
-    setNextStep(
-      "Close or archive this lead",
-      "The captured text contains a negative or do-not-contact signal."
-    );
+    return {
+      step:
+        "Close or archive this lead",
 
-    return;
+      reason:
+        "Negative or do-not-contact language was detected."
+    };
 
   }
 
@@ -1020,12 +730,13 @@ function determineNextStep(
     )
   ) {
 
-    setNextStep(
-      "Send pricing / proposal today",
-      "The screen contains proposal, quote, or pricing language."
-    );
+    return {
+      step:
+        "Send pricing / proposal today",
 
-    return;
+      reason:
+        "Pricing or proposal language was detected."
+    };
 
   }
 
@@ -1042,12 +753,13 @@ function determineNextStep(
     )
   ) {
 
-    setNextStep(
-      "Call within 1 business day",
-      "The captured text contains an explicit call-back request."
-    );
+    return {
+      step:
+        "Call within 1 business day",
 
-    return;
+      reason:
+        "An explicit call-back signal was detected."
+    };
 
   }
 
@@ -1065,12 +777,13 @@ function determineNextStep(
     )
   ) {
 
-    setNextStep(
-      "Confirm meeting and send a short recap",
-      "The captured information suggests an active meeting or appointment."
-    );
+    return {
+      step:
+        "Confirm meeting and send a short recap",
 
-    return;
+      reason:
+        "Meeting or appointment language was detected."
+    };
 
   }
 
@@ -1088,12 +801,13 @@ function determineNextStep(
     )
   ) {
 
-    setNextStep(
-      "Follow up in 3 business days",
-      "The captured text explicitly contains follow-up language."
-    );
+    return {
+      step:
+        "Follow up in 3 business days",
 
-    return;
+      reason:
+        "Explicit follow-up language was detected."
+    };
 
   }
 
@@ -1113,334 +827,726 @@ function determineNextStep(
     )
   ) {
 
-    setNextStep(
-      "Contact within 1 business day",
-      "The captured language indicates buying interest or forward movement."
-    );
+    return {
+      step:
+        "Contact within 1 business day",
 
-    return;
-
-  }
-
-
-  if (
-    $("email").value
-  ) {
-
-    setNextStep(
-      "Send an introductory follow-up email",
-      "No stronger buying signal was detected, but an email address is available."
-    );
-
-    return;
-
-  }
-
-
-  if (
-    $("phone").value
-  ) {
-
-    setNextStep(
-      "Call the contact",
-      "No stronger buying signal was detected, but a phone number is available."
-    );
-
-    return;
-
-  }
-
-
-  setNextStep(
-    "Review and make first outreach",
-    "The record was created, but no explicit action signal was detected."
-  );
-
-}
-
-
-function includesAny(
-  text,
-  phrases
-) {
-
-  return phrases.some(
-    phrase =>
-      text.includes(phrase)
-  );
-
-}
-
-
-function setNextStep(
-  step,
-  reason
-) {
-
-  currentNextStep =
-    step;
-
-  currentNextReason =
-    reason;
-
-  $("nextStepText")
-    .textContent =
-    step;
-
-  $("nextStepReason")
-    .textContent =
-    reason;
-
-}
-
-
-$("recalculate")
-.addEventListener(
-  "click",
-  function () {
-
-    determineNextStep();
-
-  }
-);
-
-
-/* =========================================================
-   SAVE CRM RECORD
-========================================================= */
-
-$("saveContact")
-.addEventListener(
-  "click",
-  function () {
-
-    const contact = {
-
-      id:
-        crypto.randomUUID
-        ? crypto.randomUUID()
-        : Date.now().toString(),
-
-      createdAt:
-        new Date()
-        .toISOString(),
-
-      name:
-        $("name").value.trim(),
-
-      company:
-        $("company").value.trim(),
-
-      title:
-        $("title").value.trim(),
-
-      email:
-        $("email").value.trim(),
-
-      phone:
-        $("phone").value.trim(),
-
-      notes:
-        $("notes").value.trim(),
-
-      nextStep:
-        currentNextStep,
-
-      nextReason:
-        currentNextReason
-
+      reason:
+        "Buying-interest or forward-movement language was detected."
     };
 
-
-    const contacts =
-      loadContacts();
-
-    contacts.unshift(
-      contact
-    );
-
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify(
-        contacts
-      )
-    );
+  }
 
 
-    renderContacts();
+  if (email) {
 
-    alert(
-      "Contact saved."
-    );
+    return {
+      step:
+        "Send an introductory follow-up email",
+
+      reason:
+        "No stronger signal was detected, but an email address is available."
+    };
 
   }
-);
 
 
-/* =========================================================
-   LOCAL CRM DATABASE
-========================================================= */
+  if (phone) {
 
-function loadContacts() {
+    return {
+      step:
+        "Call the contact",
+
+      reason:
+        "No stronger signal was detected, but a phone number is available."
+    };
+
+  }
+
+
+  return {
+    step:
+      "Review and make first outreach",
+
+    reason:
+      "A record was created but no explicit action signal was detected."
+  };
+
+}
+
+
+/* -----------------------------------------
+   RECORD GENERATION
+----------------------------------------- */
+
+function buildRecord(
+  text,
+  fileName
+) {
+
+  const lines =
+    getLines(text);
+
+  const email =
+    extractEmail(text);
+
+  const phone =
+    extractPhone(text);
+
+  const name =
+    extractName(lines);
+
+  const company =
+    extractCompany(
+      lines,
+      email
+    );
+
+  const title =
+    extractTitle(lines);
+
+  const action =
+    determineNextStep(
+      text,
+      email,
+      phone
+    );
+
+
+  return {
+
+    id:
+      crypto.randomUUID
+      ? crypto.randomUUID()
+      : String(Date.now()),
+
+    createdAt:
+      new Date()
+      .toISOString(),
+
+    sourceFile:
+      fileName || "Image",
+
+    name:
+      name ||
+      "Potential Contact",
+
+    company,
+
+    title,
+
+    email,
+
+    phone,
+
+    notes:
+      clean(text)
+      .slice(0, 900),
+
+    rawOCR:
+      text,
+
+    nextStep:
+      action.step,
+
+    nextReason:
+      action.reason
+
+  };
+
+}
+
+
+/* -----------------------------------------
+   AUTOMATIC IMAGE PROCESSING
+----------------------------------------- */
+
+async function processImage(file) {
 
   try {
 
-    return JSON.parse(
-      localStorage.getItem(
-        STORAGE_KEY
+    setStatus(
+      "Image selected successfully. Loading preview…",
+      "good"
+    );
+
+    setProgress(2);
+
+
+    if (
+      !file ||
+      !file.type.startsWith("image/")
+    ) {
+
+      throw new Error(
+        "The selected file is not an image."
+      );
+
+    }
+
+
+    if (currentObjectURL) {
+
+      URL.revokeObjectURL(
+        currentObjectURL
+      );
+
+    }
+
+
+    currentObjectURL =
+      URL.createObjectURL(file);
+
+
+    $("preview").src =
+      currentObjectURL;
+
+    $("preview").style.display =
+      "block";
+
+
+    setStatus(
+      "Upload successful. Starting OCR automatically…",
+      "good"
+    );
+
+    setProgress(6);
+
+
+    if (
+      typeof Tesseract ===
+      "undefined"
+    ) {
+
+      throw new Error(
+        "OCR library did not load. Refresh the page and try again."
+      );
+
+    }
+
+
+    const worker =
+      await Tesseract.createWorker(
+        "eng",
+        1,
+        {
+
+          logger:
+            message => {
+
+              if (
+                message.status ===
+                "recognizing text"
+              ) {
+
+                const percent =
+                  Math.round(
+                    (message.progress || 0)
+                    * 100
+                  );
+
+
+                setStatus(
+                  "Reading screen… "
+                  +
+                  percent
+                  +
+                  "%",
+                  "good"
+                );
+
+
+                setProgress(
+                  10 +
+                  percent * 0.8
+                );
+
+              }
+
+            }
+
+        }
+      );
+
+
+    const result =
+      await worker.recognize(
+        file
+      );
+
+
+    await worker.terminate();
+
+
+    const text =
+      (
+        result.data.text ||
+        ""
       )
-    ) || [];
+      .trim();
+
+
+    if (!text) {
+
+      throw new Error(
+        "OCR completed but no readable text was found in the image."
+      );
+
+    }
+
+
+    setStatus(
+      "OCR complete. Building CRM record…",
+      "good"
+    );
+
+    setProgress(94);
+
+
+    const record =
+      buildRecord(
+        text,
+        file.name
+      );
+
+
+    const records =
+      loadRecords();
+
+
+    records.unshift(
+      record
+    );
+
+
+    saveRecords(
+      records
+    );
+
+
+    renderRecords();
+
+
+    setProgress(100);
+
+
+    setStatus(
+      "Success — CRM record created automatically. Tap the new record below to view details.",
+      "good"
+    );
+
+
+    setTimeout(
+      () => setProgress(null),
+      900
+    );
 
   }
 
-  catch {
+  catch (error) {
 
-    return [];
+    console.error(error);
+
+    setProgress(null);
+
+    setStatus(
+      "Error: "
+      +
+      (
+        error?.message ||
+        String(error)
+      ),
+      "bad"
+    );
+
+  }
+
+  finally {
+
+    $("photo").value =
+      "";
 
   }
 
 }
 
 
-function renderContacts() {
+/* -----------------------------------------
+   RECORD LIST
+----------------------------------------- */
 
-  const contacts =
-    loadContacts();
+function renderRecords() {
 
-  if (
-    contacts.length === 0
-  ) {
+  const records =
+    loadRecords();
 
-    $("contacts")
-      .innerHTML =
-      '<div class="status">No contacts saved yet.</div>';
+  const container =
+    $("records");
+
+
+  if (!records.length) {
+
+    container.innerHTML =
+      '<div class="empty">No records yet. Add a photo above.</div>';
 
     return;
 
   }
 
 
-  $("contacts")
-    .innerHTML =
-    contacts
+  container.innerHTML =
+    records
     .map(
-      contact => {
+      record => `
 
-        return `
-          <div class="contact">
+        <div
+          class="contactCard"
+          data-id="${esc(record.id)}"
+          role="button"
+          tabindex="0"
+        >
 
-            <div class="contactName">
-              ${escapeHTML(
-                contact.name ||
-                "Unnamed Contact"
-              )}
-            </div>
+          <div class="contactTop">
 
-            <div class="contactMeta">
+            <div>
 
-              ${
-                escapeHTML(
-                  contact.title ||
-                  ""
-                )
-              }
+              <div class="contactName">
+                ${
+                  esc(
+                    record.name ||
+                    "Potential Contact"
+                  )
+                }
+              </div>
 
-              ${
-                contact.title &&
-                contact.company
-                ? " · "
-                : ""
-              }
-
-              ${
-                escapeHTML(
-                  contact.company ||
-                  ""
-                )
-              }
-
-              <br>
-
-              ${
-                escapeHTML(
-                  contact.email ||
-                  ""
-                )
-              }
-
-              ${
-                contact.email &&
-                contact.phone
-                ? " · "
-                : ""
-              }
-
-              ${
-                escapeHTML(
-                  contact.phone ||
-                  ""
-                )
-              }
+              <div class="contactCompany">
+                ${
+                  esc(
+                    [
+                      record.title,
+                      record.company
+                    ]
+                    .filter(Boolean)
+                    .join(" · ")
+                  )
+                }
+              </div>
 
             </div>
 
-            <div class="contactNext">
-              <strong>Next:</strong>
+            <span class="badge">
               ${
-                escapeHTML(
-                  contact.nextStep ||
-                  ""
+                new Date(
+                  record.createdAt
                 )
+                .toLocaleDateString()
               }
-            </div>
-
-            <div class="badge">
-              Saved locally
-            </div>
+            </span>
 
           </div>
-        `;
 
-      }
+          <div class="next">
+
+            <strong>
+              Next:
+            </strong>
+
+            ${
+              esc(
+                record.nextStep ||
+                ""
+              )
+            }
+
+          </div>
+
+          <div
+            class="contactCompany"
+            style="margin-top:7px"
+          >
+
+            ${
+              esc(
+                [
+                  record.email,
+                  record.phone
+                ]
+                .filter(Boolean)
+                .join(" · ")
+              )
+            }
+
+          </div>
+
+        </div>
+
+      `
     )
     .join("");
 
-}
+
+  container
+    .querySelectorAll(
+      ".contactCard"
+    )
+    .forEach(
+      card => {
+
+        const open =
+          () =>
+            openRecord(
+              card.dataset.id
+            );
 
 
-function escapeHTML(text) {
+        card.addEventListener(
+          "click",
+          open
+        );
 
-  const div =
-    document.createElement(
-      "div"
+
+        card.addEventListener(
+          "keydown",
+          event => {
+
+            if (
+              event.key === "Enter" ||
+              event.key === " "
+            ) {
+
+              open();
+
+            }
+
+          }
+        );
+
+      }
     );
 
-  div.textContent =
-    text || "";
+}
 
-  return div.innerHTML;
+
+/* -----------------------------------------
+   RECORD DETAIL VIEW
+----------------------------------------- */
+
+function openRecord(id) {
+
+  const record =
+    loadRecords()
+    .find(
+      item =>
+        item.id === id
+    );
+
+
+  if (!record) {
+    return;
+  }
+
+
+  currentDetailId =
+    id;
+
+
+  $("detailName").textContent =
+    record.name ||
+    "Potential Contact";
+
+  $("detailCompany").textContent =
+    record.company ||
+    "";
+
+  $("detailTitle").textContent =
+    record.title ||
+    "Not detected";
+
+  $("detailEmail").textContent =
+    record.email ||
+    "Not detected";
+
+  $("detailPhone").textContent =
+    record.phone ||
+    "Not detected";
+
+  $("detailNext").textContent =
+    record.nextStep ||
+    "";
+
+  $("detailReason").textContent =
+    record.nextReason ||
+    "";
+
+  $("detailNotes").textContent =
+    record.notes ||
+    "";
+
+  $("detailOCR").textContent =
+    record.rawOCR ||
+    "";
+
+
+  $("modal")
+    .classList
+    .add("open");
 
 }
 
 
-/* =========================================================
+function closeModal() {
+
+  $("modal")
+    .classList
+    .remove("open");
+
+  currentDetailId =
+    null;
+
+}
+
+
+/* -----------------------------------------
+   EVENTS
+----------------------------------------- */
+
+$("photo")
+.addEventListener(
+  "change",
+  function () {
+
+    const file =
+      this.files &&
+      this.files[0];
+
+
+    if (!file) {
+
+      setStatus(
+        "No image was selected.",
+        "warn"
+      );
+
+      return;
+
+    }
+
+
+    processImage(file);
+
+  }
+);
+
+
+$("closeModal")
+.addEventListener(
+  "click",
+  closeModal
+);
+
+
+$("modal")
+.addEventListener(
+  "click",
+  event => {
+
+    if (
+      event.target ===
+      $("modal")
+    ) {
+
+      closeModal();
+
+    }
+
+  }
+);
+
+
+$("deleteRecord")
+.addEventListener(
+  "click",
+  () => {
+
+    if (!currentDetailId) {
+      return;
+    }
+
+
+    if (
+      !confirm(
+        "Delete this CRM record?"
+      )
+    ) {
+
+      return;
+
+    }
+
+
+    saveRecords(
+      loadRecords()
+      .filter(
+        record =>
+          record.id !==
+          currentDetailId
+      )
+    );
+
+
+    closeModal();
+
+    renderRecords();
+
+  }
+);
+
+
+$("clearAll")
+.addEventListener(
+  "click",
+  () => {
+
+    if (
+      confirm(
+        "Delete every saved test record?"
+      )
+    ) {
+
+      localStorage.removeItem(
+        STORAGE_KEY
+      );
+
+      renderRecords();
+
+      setStatus(
+        "All test records cleared.",
+        "warn"
+      );
+
+    }
+
+  }
+);
+
+
+/* -----------------------------------------
    CSV EXPORT
-========================================================= */
+----------------------------------------- */
 
 $("exportCSV")
 .addEventListener(
   "click",
-  function () {
+  () => {
 
-    const contacts =
-      loadContacts();
+    const records =
+      loadRecords();
 
-    if (
-      contacts.length === 0
-    ) {
+
+    if (!records.length) {
 
       alert(
-        "No contacts to export."
+        "No records to export."
       );
 
       return;
@@ -1457,21 +1563,23 @@ $("exportCSV")
         "Email",
         "Phone",
         "Next Step",
+        "Reason",
         "Notes",
         "Created"
       ],
 
-      ...contacts.map(
-        contact => [
+      ...records.map(
+        record => [
 
-          contact.name,
-          contact.company,
-          contact.title,
-          contact.email,
-          contact.phone,
-          contact.nextStep,
-          contact.notes,
-          contact.createdAt
+          record.name,
+          record.company,
+          record.title,
+          record.email,
+          record.phone,
+          record.nextStep,
+          record.nextReason,
+          record.notes,
+          record.createdAt
 
         ]
       )
@@ -1486,13 +1594,17 @@ $("exportCSV")
           row
           .map(
             value =>
-              `"${String(
+              '"'
+              +
+              String(
                 value || ""
               )
               .replace(
                 /"/g,
                 '""'
-              )}"`
+              )
+              +
+              '"'
           )
           .join(",")
       )
@@ -1520,13 +1632,15 @@ $("exportCSV")
         "a"
       );
 
+
     link.href =
       url;
 
     link.download =
-      "snapcrm-contacts.csv";
+      "snapcrm-records.csv";
 
     link.click();
+
 
     URL.revokeObjectURL(
       url
@@ -1536,38 +1650,7 @@ $("exportCSV")
 );
 
 
-/* =========================================================
-   CLEAR TEST DATA
-========================================================= */
-
-$("clearContacts")
-.addEventListener(
-  "click",
-  function () {
-
-    if (
-      confirm(
-        "Delete every saved test contact?"
-      )
-    ) {
-
-      localStorage.removeItem(
-        STORAGE_KEY
-      );
-
-      renderContacts();
-
-    }
-
-  }
-);
-
-
-/* =========================================================
-   STARTUP
-========================================================= */
-
-renderContacts();
+renderRecords();
 
 </script>
 
