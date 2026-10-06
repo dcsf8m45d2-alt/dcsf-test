@@ -1,0 +1,1575 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#0b0b0d" />
+
+<title>SnapCRM Prototype</title>
+
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+
+<style>
+:root {
+  color-scheme: dark;
+  --bg: #0b0b0d;
+  --card: #17171c;
+  --card2: #101014;
+  --line: #2d2d34;
+  --muted: #999aa3;
+  --good: #88e0a1;
+  --warn: #ffd36c;
+  --red: #ff8d91;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: white;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+}
+
+main {
+  width: min(850px, 100%);
+  margin: auto;
+  padding: 22px 15px 70px;
+}
+
+h1 {
+  margin: 4px 0;
+  font-size: 31px;
+  letter-spacing: -0.04em;
+}
+
+.subtitle {
+  color: var(--muted);
+  line-height: 1.45;
+  margin-bottom: 18px;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 16px;
+  margin: 12px 0;
+}
+
+.row {
+  display: flex;
+  gap: 9px;
+  flex-wrap: wrap;
+}
+
+button,
+.fileButton {
+  appearance: none;
+  border: none;
+  border-radius: 13px;
+  padding: 13px 15px;
+  font-size: 15px;
+  font-weight: 700;
+  background: white;
+  color: #111;
+}
+
+button.secondary {
+  background: #292930;
+  color: white;
+}
+
+button.danger {
+  background: #422326;
+  color: #ffd8da;
+}
+
+input[type="file"] {
+  position: absolute;
+  left: -10000px;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+textarea {
+  width: 100%;
+  background: var(--card2);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  color: white;
+  padding: 12px;
+  font-size: 16px;
+}
+
+textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+label.fieldLabel {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 13px 0 6px;
+}
+
+#preview {
+  width: 100%;
+  max-height: 430px;
+  object-fit: contain;
+  display: none;
+  border-radius: 13px;
+  margin-top: 14px;
+  background: #050507;
+}
+
+.status {
+  color: var(--muted);
+  font-size: 14px;
+  min-height: 22px;
+  margin-top: 12px;
+}
+
+.good {
+  color: var(--good);
+}
+
+.warning {
+  color: var(--warn);
+}
+
+.nextStep {
+  margin-top: 12px;
+  border: 1px solid #40404a;
+  background: #111116;
+  border-radius: 14px;
+  padding: 14px;
+}
+
+.nextStepTitle {
+  font-size: 12px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .07em;
+}
+
+.nextStepText {
+  font-size: 18px;
+  margin-top: 7px;
+  font-weight: 650;
+}
+
+.nextStepReason {
+  color: var(--muted);
+  font-size: 13px;
+  margin-top: 6px;
+}
+
+.contact {
+  border-top: 1px solid var(--line);
+  padding: 14px 0;
+}
+
+.contact:first-child {
+  border-top: 0;
+}
+
+.contactName {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.contactMeta {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+  margin-top: 4px;
+}
+
+.contactNext {
+  margin-top: 7px;
+  font-size: 14px;
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 7px;
+  border-radius: 999px;
+  background: #292930;
+  font-size: 11px;
+  margin-top: 7px;
+}
+
+.hidden {
+  display: none;
+}
+
+.small {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+details {
+  margin-top: 14px;
+}
+
+summary {
+  cursor: pointer;
+  color: var(--muted);
+}
+</style>
+</head>
+
+<body>
+
+<main>
+
+<h1>SnapCRM</h1>
+
+<div class="subtitle">
+  Photograph a lead on your computer screen. SnapCRM reads the screen,
+  builds the contact, and determines what you should do next.
+</div>
+
+<div class="card">
+
+  <div class="row">
+
+    <label class="fileButton" for="photo">
+      Take / Choose Photo
+    </label>
+
+    <input
+      id="photo"
+      type="file"
+      accept="image/*"
+      capture="environment"
+    />
+
+    <button
+      id="analyzeButton"
+      class="secondary"
+    >
+      Analyze Screen
+    </button>
+
+  </div>
+
+  <div id="fileStatus" class="status">
+    No image selected.
+  </div>
+
+  <img id="preview" />
+
+  <div id="ocrStatus" class="status"></div>
+
+</div>
+
+
+<div id="contactEditor" class="card hidden">
+
+  <h2 style="margin-top:0">
+    New CRM Record
+  </h2>
+
+  <label class="fieldLabel">Name</label>
+  <input id="name" type="text" />
+
+  <label class="fieldLabel">Company</label>
+  <input id="company" type="text" />
+
+  <label class="fieldLabel">Title</label>
+  <input id="title" type="text" />
+
+  <label class="fieldLabel">Email</label>
+  <input id="email" type="email" />
+
+  <label class="fieldLabel">Phone</label>
+  <input id="phone" type="tel" />
+
+  <label class="fieldLabel">Notes</label>
+  <textarea id="notes"></textarea>
+
+  <div class="nextStep">
+
+    <div class="nextStepTitle">
+      Recommended next step
+    </div>
+
+    <div
+      id="nextStepText"
+      class="nextStepText"
+    ></div>
+
+    <div
+      id="nextStepReason"
+      class="nextStepReason"
+    ></div>
+
+  </div>
+
+  <div class="row" style="margin-top:15px">
+
+    <button id="saveContact">
+      Save Contact
+    </button>
+
+    <button
+      id="recalculate"
+      class="secondary"
+    >
+      Recalculate Next Step
+    </button>
+
+  </div>
+
+  <details>
+
+    <summary>
+      Raw OCR text
+    </summary>
+
+    <textarea
+      id="rawOCR"
+      style="margin-top:10px"
+    ></textarea>
+
+  </details>
+
+</div>
+
+
+<div class="card">
+
+  <div class="row" style="justify-content:space-between">
+
+    <h2 style="margin:0">
+      Contacts
+    </h2>
+
+    <button
+      id="exportCSV"
+      class="secondary"
+    >
+      Export CSV
+    </button>
+
+  </div>
+
+  <div id="contacts"></div>
+
+</div>
+
+
+<div class="card">
+
+  <button
+    id="clearContacts"
+    class="danger"
+  >
+    Clear All Test Data
+  </button>
+
+  <p class="small">
+    Prototype only. OCR happens inside your browser. The OCR engine is downloaded
+    from a public CDN, but this prototype does not intentionally upload your image
+    to a server.
+  </p>
+
+</div>
+
+</main>
+
+
+<script>
+
+let imageDataURL = null;
+let currentNextStep = "";
+let currentNextReason = "";
+
+const STORAGE_KEY = "snapcrm_contacts_v1";
+
+
+/* =========================================================
+   BASIC HELPERS
+========================================================= */
+
+function $(id) {
+  return document.getElementById(id);
+}
+
+function clean(text) {
+  return (text || "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function getLines(text) {
+
+  return text
+    .split(/\r?\n/)
+    .map(line => line.trim())
+    .filter(line => line.length > 1);
+
+}
+
+
+/* =========================================================
+   IMAGE SELECTION
+========================================================= */
+
+$("photo").addEventListener("change", async function () {
+
+  const file =
+    this.files &&
+    this.files[0];
+
+  if (!file) {
+
+    $("fileStatus").textContent =
+      "No image selected.";
+
+    return;
+
+  }
+
+  $("fileStatus").textContent =
+    "Loaded: " + file.name;
+
+  const reader =
+    new FileReader();
+
+  reader.onload =
+    function (event) {
+
+      imageDataURL =
+        event.target.result;
+
+      $("preview").src =
+        imageDataURL;
+
+      $("preview").style.display =
+        "block";
+
+    };
+
+  reader.readAsDataURL(file);
+
+});
+
+
+/* =========================================================
+   OCR
+========================================================= */
+
+$("analyzeButton")
+.addEventListener(
+  "click",
+  async function () {
+
+    if (!imageDataURL) {
+
+      alert(
+        "Take or choose a photo first."
+      );
+
+      return;
+
+    }
+
+    try {
+
+      $("ocrStatus").textContent =
+        "Loading OCR engine…";
+
+      const worker =
+        await Tesseract.createWorker(
+          "eng",
+          1,
+          {
+            logger: message => {
+
+              if (
+                message.status ===
+                "recognizing text"
+              ) {
+
+                $("ocrStatus")
+                .textContent =
+                "Reading screen… "
+                +
+                Math.round(
+                  message.progress * 100
+                )
+                +
+                "%";
+
+              }
+
+            }
+          }
+        );
+
+      const result =
+        await worker.recognize(
+          imageDataURL
+        );
+
+      await worker.terminate();
+
+      const text =
+        result.data.text || "";
+
+      $("rawOCR").value =
+        text;
+
+      $("ocrStatus")
+      .innerHTML =
+        '<span class="good">OCR complete.</span>';
+
+      processOCR(text);
+
+    }
+
+    catch (error) {
+
+      $("ocrStatus")
+      .innerHTML =
+        '<span class="warning">'
+        +
+        "OCR failed: "
+        +
+        error.message
+        +
+        "</span>";
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   CONTACT PARSER
+========================================================= */
+
+function processOCR(text) {
+
+  const lines =
+    getLines(text);
+
+  const lower =
+    text.toLowerCase();
+
+
+  const email =
+    extractEmail(text);
+
+  const phone =
+    extractPhone(text);
+
+  const name =
+    extractName(lines);
+
+  const company =
+    extractCompany(lines, email);
+
+  const title =
+    extractTitle(lines);
+
+
+  $("name").value =
+    name;
+
+  $("company").value =
+    company;
+
+  $("title").value =
+    title;
+
+  $("email").value =
+    email;
+
+  $("phone").value =
+    phone;
+
+  $("notes").value =
+    buildNotes(text);
+
+
+  determineNextStep(text);
+
+  $("contactEditor")
+    .classList
+    .remove("hidden");
+
+}
+
+
+/* =========================================================
+   EMAIL EXTRACTION
+========================================================= */
+
+function extractEmail(text) {
+
+  const match =
+    text.match(
+      /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i
+    );
+
+  return match
+    ? match[0]
+    : "";
+
+}
+
+
+/* =========================================================
+   PHONE EXTRACTION
+========================================================= */
+
+function extractPhone(text) {
+
+  const matches =
+    text.match(
+      /(?:\+?1[\s.-]?)?(?:\(?\d{3}\)?[\s.-]?)\d{3}[\s.-]?\d{4}/g
+    );
+
+  if (!matches) {
+    return "";
+  }
+
+  return matches[0];
+
+}
+
+
+/* =========================================================
+   NAME EXTRACTION
+========================================================= */
+
+function extractName(lines) {
+
+  const labelPatterns = [
+    /^name\s*[:\-]\s*(.+)$/i,
+    /^contact\s*[:\-]\s*(.+)$/i,
+    /^contact name\s*[:\-]\s*(.+)$/i,
+    /^lead\s*[:\-]\s*(.+)$/i
+  ];
+
+  for (const line of lines) {
+
+    for (
+      const pattern of labelPatterns
+    ) {
+
+      const match =
+        line.match(pattern);
+
+      if (match) {
+        return clean(match[1]);
+      }
+
+    }
+
+  }
+
+
+  /*
+    Fallback:
+    look for likely human names.
+
+    Two to four capitalized words.
+  */
+
+  for (const line of lines) {
+
+    if (
+      /^[A-Z][a-z]+(?:\s+[A-Z][a-z]+){1,3}$/
+      .test(line)
+    ) {
+
+      if (
+        !looksLikeCompany(line)
+      ) {
+
+        return line;
+
+      }
+
+    }
+
+  }
+
+  return "";
+
+}
+
+
+/* =========================================================
+   COMPANY EXTRACTION
+========================================================= */
+
+function extractCompany(
+  lines,
+  email
+) {
+
+  const labels = [
+    /^company\s*[:\-]\s*(.+)$/i,
+    /^account\s*[:\-]\s*(.+)$/i,
+    /^organization\s*[:\-]\s*(.+)$/i,
+    /^employer\s*[:\-]\s*(.+)$/i
+  ];
+
+  for (const line of lines) {
+
+    for (
+      const pattern of labels
+    ) {
+
+      const match =
+        line.match(pattern);
+
+      if (match) {
+
+        return clean(match[1]);
+
+      }
+
+    }
+
+  }
+
+
+  /*
+    Look for obvious business suffixes.
+  */
+
+  for (const line of lines) {
+
+    if (
+      looksLikeCompany(line)
+    ) {
+
+      return line;
+
+    }
+
+  }
+
+
+  /*
+    Last fallback:
+    convert the email domain into
+    something readable.
+  */
+
+  if (email) {
+
+    const domain =
+      email
+        .split("@")[1]
+        ?.split(".")[0];
+
+    if (
+      domain &&
+      ![
+        "gmail",
+        "yahoo",
+        "outlook",
+        "hotmail",
+        "icloud"
+      ].includes(
+        domain.toLowerCase()
+      )
+    ) {
+
+      return domain
+        .replace(
+          /[-_]/g,
+          " "
+        )
+        .replace(
+          /\b\w/g,
+          char =>
+            char.toUpperCase()
+        );
+
+    }
+
+  }
+
+  return "";
+
+}
+
+
+function looksLikeCompany(text) {
+
+  return /\b(
+    LLC|
+    Inc|
+    Incorporated|
+    Corp|
+    Corporation|
+    Company|
+    Co\.|
+    Ltd|
+    Group|
+    Partners|
+    Agency|
+    Solutions|
+    Services|
+    Health|
+    Insurance|
+    Benefits|
+    Technologies|
+    Consulting
+  )\b/ix.test(text);
+
+}
+
+
+/*
+  Safari doesn't support regex x flag.
+  Replace function above with JS-compatible version.
+*/
+
+function looksLikeCompany(text) {
+
+  return /\b(LLC|Inc|Incorporated|Corp|Corporation|Company|Co\.|Ltd|Group|Partners|Agency|Solutions|Services|Health|Insurance|Benefits|Technologies|Consulting)\b/i
+    .test(text);
+
+}
+
+
+/* =========================================================
+   TITLE EXTRACTION
+========================================================= */
+
+function extractTitle(lines) {
+
+  const labelPatterns = [
+
+    /^title\s*[:\-]\s*(.+)$/i,
+
+    /^job title\s*[:\-]\s*(.+)$/i,
+
+    /^role\s*[:\-]\s*(.+)$/i
+
+  ];
+
+  for (const line of lines) {
+
+    for (
+      const pattern of labelPatterns
+    ) {
+
+      const match =
+        line.match(pattern);
+
+      if (match) {
+
+        return clean(
+          match[1]
+        );
+
+      }
+
+    }
+
+  }
+
+
+  const titleWords = [
+
+    "manager",
+    "director",
+    "president",
+    "owner",
+    "founder",
+    "broker",
+    "agent",
+    "specialist",
+    "executive",
+    "representative",
+    "consultant",
+    "coordinator",
+    "administrator",
+    "vice president",
+    "vp",
+    "chief",
+    "ceo",
+    "cfo",
+    "coo",
+    "hr",
+    "human resources"
+
+  ];
+
+  for (const line of lines) {
+
+    const lower =
+      line.toLowerCase();
+
+    if (
+      titleWords.some(
+        word =>
+          lower.includes(word)
+      )
+    ) {
+
+      if (
+        line.length < 80
+      ) {
+
+        return line;
+
+      }
+
+    }
+
+  }
+
+  return "";
+
+}
+
+
+/* =========================================================
+   NOTES
+========================================================= */
+
+function buildNotes(text) {
+
+  /*
+    For prototype:
+    preserve a short chunk of OCR
+    so nothing useful disappears.
+  */
+
+  return clean(text)
+    .slice(0, 900);
+
+}
+
+
+/* =========================================================
+   RULE-BASED NEXT STEP ENGINE
+========================================================= */
+
+function determineNextStep(
+  textOverride
+) {
+
+  const source =
+    (
+      textOverride ||
+      $("rawOCR").value ||
+      ""
+    )
+    .toLowerCase();
+
+
+  /*
+    Highest priority rules first.
+  */
+
+
+  if (
+    includesAny(
+      source,
+      [
+        "do not contact",
+        "not interested",
+        "closed lost",
+        "no longer interested"
+      ]
+    )
+  ) {
+
+    setNextStep(
+      "Close or archive this lead",
+      "The captured text contains a negative or do-not-contact signal."
+    );
+
+    return;
+
+  }
+
+
+  if (
+    includesAny(
+      source,
+      [
+        "proposal",
+        "quote",
+        "pricing",
+        "rate sheet",
+        "send rates",
+        "send pricing"
+      ]
+    )
+  ) {
+
+    setNextStep(
+      "Send pricing / proposal today",
+      "The screen contains proposal, quote, or pricing language."
+    );
+
+    return;
+
+  }
+
+
+  if (
+    includesAny(
+      source,
+      [
+        "call back",
+        "give me a call",
+        "call me",
+        "phone me"
+      ]
+    )
+  ) {
+
+    setNextStep(
+      "Call within 1 business day",
+      "The captured text contains an explicit call-back request."
+    );
+
+    return;
+
+  }
+
+
+  if (
+    includesAny(
+      source,
+      [
+        "demo",
+        "meeting",
+        "appointment",
+        "scheduled",
+        "calendar invite"
+      ]
+    )
+  ) {
+
+    setNextStep(
+      "Confirm meeting and send a short recap",
+      "The captured information suggests an active meeting or appointment."
+    );
+
+    return;
+
+  }
+
+
+  if (
+    includesAny(
+      source,
+      [
+        "follow up",
+        "follow-up",
+        "check back",
+        "circle back",
+        "reach back"
+      ]
+    )
+  ) {
+
+    setNextStep(
+      "Follow up in 3 business days",
+      "The captured text explicitly contains follow-up language."
+    );
+
+    return;
+
+  }
+
+
+  if (
+    includesAny(
+      source,
+      [
+        "interested",
+        "ready to move forward",
+        "move forward",
+        "sounds good",
+        "next steps",
+        "let's proceed",
+        "lets proceed"
+      ]
+    )
+  ) {
+
+    setNextStep(
+      "Contact within 1 business day",
+      "The captured language indicates buying interest or forward movement."
+    );
+
+    return;
+
+  }
+
+
+  if (
+    $("email").value
+  ) {
+
+    setNextStep(
+      "Send an introductory follow-up email",
+      "No stronger buying signal was detected, but an email address is available."
+    );
+
+    return;
+
+  }
+
+
+  if (
+    $("phone").value
+  ) {
+
+    setNextStep(
+      "Call the contact",
+      "No stronger buying signal was detected, but a phone number is available."
+    );
+
+    return;
+
+  }
+
+
+  setNextStep(
+    "Review and make first outreach",
+    "The record was created, but no explicit action signal was detected."
+  );
+
+}
+
+
+function includesAny(
+  text,
+  phrases
+) {
+
+  return phrases.some(
+    phrase =>
+      text.includes(phrase)
+  );
+
+}
+
+
+function setNextStep(
+  step,
+  reason
+) {
+
+  currentNextStep =
+    step;
+
+  currentNextReason =
+    reason;
+
+  $("nextStepText")
+    .textContent =
+    step;
+
+  $("nextStepReason")
+    .textContent =
+    reason;
+
+}
+
+
+$("recalculate")
+.addEventListener(
+  "click",
+  function () {
+
+    determineNextStep();
+
+  }
+);
+
+
+/* =========================================================
+   SAVE CRM RECORD
+========================================================= */
+
+$("saveContact")
+.addEventListener(
+  "click",
+  function () {
+
+    const contact = {
+
+      id:
+        crypto.randomUUID
+        ? crypto.randomUUID()
+        : Date.now().toString(),
+
+      createdAt:
+        new Date()
+        .toISOString(),
+
+      name:
+        $("name").value.trim(),
+
+      company:
+        $("company").value.trim(),
+
+      title:
+        $("title").value.trim(),
+
+      email:
+        $("email").value.trim(),
+
+      phone:
+        $("phone").value.trim(),
+
+      notes:
+        $("notes").value.trim(),
+
+      nextStep:
+        currentNextStep,
+
+      nextReason:
+        currentNextReason
+
+    };
+
+
+    const contacts =
+      loadContacts();
+
+    contacts.unshift(
+      contact
+    );
+
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify(
+        contacts
+      )
+    );
+
+
+    renderContacts();
+
+    alert(
+      "Contact saved."
+    );
+
+  }
+);
+
+
+/* =========================================================
+   LOCAL CRM DATABASE
+========================================================= */
+
+function loadContacts() {
+
+  try {
+
+    return JSON.parse(
+      localStorage.getItem(
+        STORAGE_KEY
+      )
+    ) || [];
+
+  }
+
+  catch {
+
+    return [];
+
+  }
+
+}
+
+
+function renderContacts() {
+
+  const contacts =
+    loadContacts();
+
+  if (
+    contacts.length === 0
+  ) {
+
+    $("contacts")
+      .innerHTML =
+      '<div class="status">No contacts saved yet.</div>';
+
+    return;
+
+  }
+
+
+  $("contacts")
+    .innerHTML =
+    contacts
+    .map(
+      contact => {
+
+        return `
+          <div class="contact">
+
+            <div class="contactName">
+              ${escapeHTML(
+                contact.name ||
+                "Unnamed Contact"
+              )}
+            </div>
+
+            <div class="contactMeta">
+
+              ${
+                escapeHTML(
+                  contact.title ||
+                  ""
+                )
+              }
+
+              ${
+                contact.title &&
+                contact.company
+                ? " · "
+                : ""
+              }
+
+              ${
+                escapeHTML(
+                  contact.company ||
+                  ""
+                )
+              }
+
+              <br>
+
+              ${
+                escapeHTML(
+                  contact.email ||
+                  ""
+                )
+              }
+
+              ${
+                contact.email &&
+                contact.phone
+                ? " · "
+                : ""
+              }
+
+              ${
+                escapeHTML(
+                  contact.phone ||
+                  ""
+                )
+              }
+
+            </div>
+
+            <div class="contactNext">
+              <strong>Next:</strong>
+              ${
+                escapeHTML(
+                  contact.nextStep ||
+                  ""
+                )
+              }
+            </div>
+
+            <div class="badge">
+              Saved locally
+            </div>
+
+          </div>
+        `;
+
+      }
+    )
+    .join("");
+
+}
+
+
+function escapeHTML(text) {
+
+  const div =
+    document.createElement(
+      "div"
+    );
+
+  div.textContent =
+    text || "";
+
+  return div.innerHTML;
+
+}
+
+
+/* =========================================================
+   CSV EXPORT
+========================================================= */
+
+$("exportCSV")
+.addEventListener(
+  "click",
+  function () {
+
+    const contacts =
+      loadContacts();
+
+    if (
+      contacts.length === 0
+    ) {
+
+      alert(
+        "No contacts to export."
+      );
+
+      return;
+
+    }
+
+
+    const rows = [
+
+      [
+        "Name",
+        "Company",
+        "Title",
+        "Email",
+        "Phone",
+        "Next Step",
+        "Notes",
+        "Created"
+      ],
+
+      ...contacts.map(
+        contact => [
+
+          contact.name,
+          contact.company,
+          contact.title,
+          contact.email,
+          contact.phone,
+          contact.nextStep,
+          contact.notes,
+          contact.createdAt
+
+        ]
+      )
+
+    ];
+
+
+    const csv =
+      rows
+      .map(
+        row =>
+          row
+          .map(
+            value =>
+              `"${String(
+                value || ""
+              )
+              .replace(
+                /"/g,
+                '""'
+              )}"`
+          )
+          .join(",")
+      )
+      .join("\n");
+
+
+    const blob =
+      new Blob(
+        [csv],
+        {
+          type:
+            "text/csv;charset=utf-8"
+        }
+      );
+
+
+    const url =
+      URL.createObjectURL(
+        blob
+      );
+
+
+    const link =
+      document.createElement(
+        "a"
+      );
+
+    link.href =
+      url;
+
+    link.download =
+      "snapcrm-contacts.csv";
+
+    link.click();
+
+    URL.revokeObjectURL(
+      url
+    );
+
+  }
+);
+
+
+/* =========================================================
+   CLEAR TEST DATA
+========================================================= */
+
+$("clearContacts")
+.addEventListener(
+  "click",
+  function () {
+
+    if (
+      confirm(
+        "Delete every saved test contact?"
+      )
+    ) {
+
+      localStorage.removeItem(
+        STORAGE_KEY
+      );
+
+      renderContacts();
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   STARTUP
+========================================================= */
+
+renderContacts();
+
+</script>
+
+</body>
+</html>
