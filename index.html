@@ -4,75 +4,325 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="theme-color" content="#0b0b0d" />
-<title>SnapCRM Prototype v0.4</title>
+
+<title>SnapCRM Prototype v0.5</title>
+
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 
 <style>
-:root{color-scheme:dark;--bg:#0b0b0d;--card:#17171c;--line:#2d2d34;--muted:#999aa3;--good:#8ee6a6;--warn:#ffd36c;--bad:#ff9297}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:#fff;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif}
-main{width:min(850px,100%);margin:auto;padding:22px 15px 70px}
-h1{margin:4px 0;font-size:31px;letter-spacing:-.04em}
-.subtitle{color:var(--muted);line-height:1.45;margin-bottom:18px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin:12px 0}
-.row{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
-.fileButton,button{appearance:none;border:0;border-radius:13px;padding:13px 15px;font-size:15px;font-weight:700;background:#fff;color:#111;cursor:pointer}
-button.secondary{background:#292930;color:#fff}
-button.danger{background:#422326;color:#ffd8da}
-input[type=file]{position:absolute;left:-10000px}
-#preview{display:none;width:100%;max-height:410px;object-fit:contain;border-radius:13px;margin-top:14px;background:#050507}
-.statusBox{margin-top:12px;border:1px solid var(--line);border-radius:13px;padding:12px;background:#111116;font-size:14px;line-height:1.45}
-.statusGood{color:var(--good)}
-.statusWarn{color:var(--warn)}
-.statusBad{color:var(--bad)}
-.progress{width:100%;height:6px;background:#25252b;border-radius:999px;overflow:hidden;margin-top:9px;display:none}
-.progressBar{height:100%;width:0;background:#fff;transition:width .15s ease}
-.contactCard{border:1px solid var(--line);background:#111116;border-radius:15px;padding:14px;margin-top:10px;cursor:pointer}
-.contactCard:active{transform:scale(.995)}
-.contactTop{display:flex;justify-content:space-between;gap:10px}
-.contactName{font-size:18px;font-weight:750}
-.contactCompany{color:var(--muted);font-size:13px;margin-top:3px}
-.next{margin-top:10px;font-size:14px}
-.badge{display:inline-block;padding:4px 8px;border-radius:999px;background:#292930;color:#ddd;font-size:11px}
-.badge.processing{color:var(--warn)}
-.badge.ready{color:var(--good)}
-.badge.error{color:var(--bad)}
-.empty{color:var(--muted);padding:12px 0}
-.small{font-size:12px;color:var(--muted);line-height:1.45}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.72);display:none;align-items:flex-end;justify-content:center;padding:12px;z-index:99}
-.modal.open{display:flex}
-.sheet{width:min(760px,100%);max-height:88vh;overflow:auto;background:#17171c;border:1px solid var(--line);border-radius:22px 22px 16px 16px;padding:18px}
-.sheet h2{margin:0 0 4px}
-.detailLabel{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em;margin-top:15px}
-.detailValue{font-size:15px;line-height:1.45;margin-top:4px;white-space:pre-wrap;word-break:break-word}
-.raw{background:#0d0d10;border:1px solid var(--line);border-radius:12px;padding:12px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;white-space:pre-wrap;max-height:260px;overflow:auto}
+:root {
+  color-scheme: dark;
+  --bg: #0b0b0d;
+  --card: #17171c;
+  --line: #2d2d34;
+  --muted: #999aa3;
+  --good: #8ee6a6;
+  --warn: #ffd36c;
+  --bad: #ff9297;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: #fff;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+}
+
+main {
+  width: min(900px, 100%);
+  margin: auto;
+  padding: 22px 15px 70px;
+}
+
+h1 {
+  margin: 4px 0;
+  font-size: 31px;
+  letter-spacing: -.04em;
+}
+
+.subtitle {
+  color: var(--muted);
+  line-height: 1.45;
+  margin-bottom: 18px;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 16px;
+  margin: 12px 0;
+}
+
+.row {
+  display: flex;
+  gap: 9px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.fileButton,
+button {
+  appearance: none;
+  border: 0;
+  border-radius: 13px;
+  padding: 13px 15px;
+  font-size: 15px;
+  font-weight: 700;
+  background: #fff;
+  color: #111;
+  cursor: pointer;
+}
+
+button.secondary {
+  background: #292930;
+  color: #fff;
+}
+
+button.danger {
+  background: #422326;
+  color: #ffd8da;
+}
+
+input[type=file] {
+  position: absolute;
+  left: -10000px;
+}
+
+#preview {
+  display: none;
+  width: 100%;
+  max-height: 410px;
+  object-fit: contain;
+  border-radius: 13px;
+  margin-top: 14px;
+  background: #050507;
+}
+
+.statusBox {
+  margin-top: 12px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  padding: 12px;
+  background: #111116;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.statusGood {
+  color: var(--good);
+}
+
+.statusWarn {
+  color: var(--warn);
+}
+
+.statusBad {
+  color: var(--bad);
+}
+
+.progress {
+  width: 100%;
+  height: 6px;
+  background: #25252b;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 9px;
+  display: none;
+}
+
+.progressBar {
+  height: 100%;
+  width: 0;
+  background: #fff;
+  transition: width .15s ease;
+}
+
+.contactCard {
+  border: 1px solid var(--line);
+  background: #111116;
+  border-radius: 15px;
+  padding: 14px;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+.contactCard:active {
+  transform: scale(.995);
+}
+
+.contactTop {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.contactName {
+  font-size: 18px;
+  font-weight: 750;
+}
+
+.contactCompany {
+  color: var(--muted);
+  font-size: 13px;
+  margin-top: 3px;
+}
+
+.next {
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #292930;
+  color: #ddd;
+  font-size: 11px;
+}
+
+.badge.processing {
+  color: var(--warn);
+}
+
+.badge.ready {
+  color: var(--good);
+}
+
+.badge.error {
+  color: var(--bad);
+}
+
+.empty {
+  color: var(--muted);
+  padding: 12px 0;
+}
+
+.small {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.72);
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 12px;
+  z-index: 99;
+}
+
+.modal.open {
+  display: flex;
+}
+
+.sheet {
+  width: min(760px, 100%);
+  max-height: 88vh;
+  overflow: auto;
+  background: #17171c;
+  border: 1px solid var(--line);
+  border-radius: 22px 22px 16px 16px;
+  padding: 18px;
+}
+
+.sheet h2 {
+  margin: 0 0 4px;
+}
+
+.detailLabel {
+  color: var(--muted);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  margin-top: 15px;
+}
+
+.detailValue {
+  font-size: 15px;
+  line-height: 1.45;
+  margin-top: 4px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.raw {
+  background: #0d0d10;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  white-space: pre-wrap;
+  max-height: 260px;
+  overflow: auto;
+}
 </style>
 </head>
 
 <body>
+
 <main>
 
 <h1>SnapCRM</h1>
+
 <div class="subtitle">
-  Photograph a lead on your computer screen. SnapCRM creates the record immediately, then fills it from OCR.
+  Take or choose a photo of a contact, email, or lead screen.
+  SnapCRM creates the record immediately, fills it from OCR,
+  and recommends the next action.
 </div>
 
 <div class="card">
 
   <div class="row">
-    <label class="fileButton" for="photo">Take / Choose Photo</label>
-    <input id="photo" type="file" accept="image/*" />
-    <button id="demoButton" class="secondary">Create Demo Record</button>
+
+    <label class="fileButton" for="photo">
+      Take / Choose Photo
+    </label>
+
+    <input
+      id="photo"
+      type="file"
+      accept="image/*"
+    />
+
+    <button
+      id="demoButton"
+      class="secondary"
+    >
+      Create Demo Record
+    </button>
+
   </div>
 
-  <img id="preview" alt="Selected image preview" />
+  <img
+    id="preview"
+    alt="Selected image preview"
+  />
 
-  <div id="status" class="statusBox">
+  <div
+    id="status"
+    class="statusBox"
+  >
     Waiting for an image.
   </div>
 
-  <div id="progress" class="progress">
-    <div id="progressBar" class="progressBar"></div>
+  <div
+    id="progress"
+    class="progress"
+  >
+    <div
+      id="progressBar"
+      class="progressBar"
+    ></div>
   </div>
 
 </div>
@@ -80,9 +330,22 @@ input[type=file]{position:absolute;left:-10000px}
 
 <div class="card">
 
-  <div class="row" style="justify-content:space-between">
-    <h2 style="margin:0">CRM Records</h2>
-    <button id="exportCSV" class="secondary">Export CSV</button>
+  <div
+    class="row"
+    style="justify-content:space-between"
+  >
+
+    <h2 style="margin:0">
+      CRM Records
+    </h2>
+
+    <button
+      id="exportCSV"
+      class="secondary"
+    >
+      Export CSV
+    </button>
+
   </div>
 
   <div id="records"></div>
@@ -92,13 +355,16 @@ input[type=file]{position:absolute;left:-10000px}
 
 <div class="card">
 
-  <button id="clearAll" class="danger">
+  <button
+    id="clearAll"
+    class="danger"
+  >
     Clear All Test Data
   </button>
 
   <p class="small">
-    If Demo Record works but photo OCR does not, storage/rendering are fine and the OCR path is the problem.
-    If Demo Record also fails, the page is cached or JavaScript is not running.
+    Prototype v0.5. OCR runs in your browser through Tesseract.js.
+    Records are stored locally in this browser.
   </p>
 
 </div>
@@ -106,49 +372,153 @@ input[type=file]{position:absolute;left:-10000px}
 </main>
 
 
-<div id="modal" class="modal">
+<div
+  id="modal"
+  class="modal"
+>
 
   <div class="sheet">
 
-    <div class="row" style="justify-content:space-between">
+    <div
+      class="row"
+      style="justify-content:space-between"
+    >
 
       <div>
-        <h2 id="detailName">Record</h2>
-        <div id="detailCompany" class="contactCompany"></div>
+
+        <h2 id="detailName">
+          Record
+        </h2>
+
+        <div
+          id="detailCompany"
+          class="contactCompany"
+        ></div>
+
       </div>
 
-      <button id="closeModal" class="secondary">
+      <button
+        id="closeModal"
+        class="secondary"
+      >
         Close
       </button>
 
     </div>
 
-    <div class="detailLabel">Status</div>
-    <div id="detailStatus" class="detailValue"></div>
 
-    <div class="detailLabel">Title</div>
-    <div id="detailTitle" class="detailValue"></div>
+    <div class="detailLabel">
+      Status
+    </div>
 
-    <div class="detailLabel">Email</div>
-    <div id="detailEmail" class="detailValue"></div>
+    <div
+      id="detailStatus"
+      class="detailValue"
+    ></div>
 
-    <div class="detailLabel">Phone</div>
-    <div id="detailPhone" class="detailValue"></div>
 
-    <div class="detailLabel">Recommended next step</div>
-    <div id="detailNext" class="detailValue"></div>
+    <div class="detailLabel">
+      Title
+    </div>
 
-    <div class="detailLabel">Why</div>
-    <div id="detailReason" class="detailValue"></div>
+    <div
+      id="detailTitle"
+      class="detailValue"
+    ></div>
 
-    <div class="detailLabel">Notes</div>
-    <div id="detailNotes" class="detailValue"></div>
 
-    <div class="detailLabel">Raw OCR / error</div>
-    <div id="detailOCR" class="raw"></div>
+    <div class="detailLabel">
+      Email
+    </div>
 
-    <div class="row" style="margin-top:16px">
-      <button id="deleteRecord" class="danger">Delete Record</button>
+    <div
+      id="detailEmail"
+      class="detailValue"
+    ></div>
+
+
+    <div class="detailLabel">
+      Phone
+    </div>
+
+    <div
+      id="detailPhone"
+      class="detailValue"
+    ></div>
+
+
+    <div class="detailLabel">
+      Address
+    </div>
+
+    <div
+      id="detailAddress"
+      class="detailValue"
+    ></div>
+
+
+    <div class="detailLabel">
+      Website
+    </div>
+
+    <div
+      id="detailWebsite"
+      class="detailValue"
+    ></div>
+
+
+    <div class="detailLabel">
+      Recommended next step
+    </div>
+
+    <div
+      id="detailNext"
+      class="detailValue"
+    ></div>
+
+
+    <div class="detailLabel">
+      Why
+    </div>
+
+    <div
+      id="detailReason"
+      class="detailValue"
+    ></div>
+
+
+    <div class="detailLabel">
+      Notes
+    </div>
+
+    <div
+      id="detailNotes"
+      class="detailValue"
+    ></div>
+
+
+    <div class="detailLabel">
+      Raw OCR / error
+    </div>
+
+    <div
+      id="detailOCR"
+      class="raw"
+    ></div>
+
+
+    <div
+      class="row"
+      style="margin-top:16px"
+    >
+
+      <button
+        id="deleteRecord"
+        class="danger"
+      >
+        Delete Record
+      </button>
+
     </div>
 
   </div>
@@ -158,100 +528,128 @@ input[type=file]{position:absolute;left:-10000px}
 
 <script>
 
-const STORAGE_KEY = "snapcrm_contacts_v4";
+const STORAGE_KEY =
+  "snapcrm_contacts_v5";
 
-let currentDetailId = null;
-let currentObjectURL = null;
+let currentDetailId =
+  null;
 
+let currentObjectURL =
+  null;
+
+
+/* ==========================
+   BASIC HELPERS
+========================== */
 
 function $(id) {
-  return document.getElementById(id);
+
+  return document
+    .getElementById(id);
+
 }
 
 
 function esc(text) {
-  const div = document.createElement("div");
-  div.textContent = text || "";
+
+  const div =
+    document.createElement("div");
+
+  div.textContent =
+    text || "";
+
   return div.innerHTML;
+
 }
 
 
 function clean(text) {
-  return (text || "").replace(/\s+/g, " ").trim();
+
+  return (text || "")
+    .replace(/\s+/g, " ")
+    .trim();
+
 }
 
 
 function getLines(text) {
+
   return (text || "")
     .split(/\r?\n/)
-    .map(x => x.trim())
-    .filter(x => x.length > 1);
+    .map(
+      x => x.trim()
+    )
+    .filter(
+      x => x.length > 1
+    );
+
 }
 
 
 function makeId() {
+
   return crypto.randomUUID
     ? crypto.randomUUID()
-    : String(Date.now()) + Math.random().toString(16).slice(2);
+    : String(Date.now())
+      +
+      Math.random()
+      .toString(16)
+      .slice(2);
+
 }
 
 
+/* ==========================
+   STORAGE
+========================== */
+
 function loadRecords() {
+
   try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-  } catch {
-    return [];
+
+    return JSON.parse(
+      localStorage.getItem(
+        STORAGE_KEY
+      )
+    ) || [];
+
   }
+
+  catch {
+
+    return [];
+
+  }
+
 }
 
 
 function saveRecords(records) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+
+  localStorage.setItem(
+    STORAGE_KEY,
+    JSON.stringify(records)
+  );
+
 }
 
 
-function setStatus(message, type = "") {
+function updateRecord(
+  id,
+  patch
+) {
 
-  const el = $("status");
-
-  el.className = "statusBox";
-
-  if (type === "good") el.classList.add("statusGood");
-  if (type === "warn") el.classList.add("statusWarn");
-  if (type === "bad") el.classList.add("statusBad");
-
-  el.textContent = message;
-}
-
-
-function setProgress(value) {
-
-  const wrap = $("progress");
-  const bar = $("progressBar");
-
-  if (value === null) {
-    wrap.style.display = "none";
-    bar.style.width = "0%";
-    return;
-  }
-
-  wrap.style.display = "block";
-
-  bar.style.width =
-    Math.max(0, Math.min(100, value)) + "%";
-}
-
-
-function updateRecord(id, patch) {
-
-  const records = loadRecords();
+  const records =
+    loadRecords();
 
   const i =
     records.findIndex(
       r => r.id === id
     );
 
-  if (i < 0) return;
+  if (i < 0) {
+    return;
+  }
 
   records[i] = {
     ...records[i],
@@ -259,105 +657,334 @@ function updateRecord(id, patch) {
   };
 
   saveRecords(records);
+
   renderRecords();
+
 }
 
 
-/* -----------------------------
-   FIELD EXTRACTION
------------------------------ */
+/* ==========================
+   STATUS
+========================== */
+
+function setStatus(
+  message,
+  type = ""
+) {
+
+  const el =
+    $("status");
+
+  el.className =
+    "statusBox";
+
+  if (type === "good") {
+    el.classList.add(
+      "statusGood"
+    );
+  }
+
+  if (type === "warn") {
+    el.classList.add(
+      "statusWarn"
+    );
+  }
+
+  if (type === "bad") {
+    el.classList.add(
+      "statusBad"
+    );
+  }
+
+  el.textContent =
+    message;
+
+}
+
+
+function setProgress(value) {
+
+  const wrap =
+    $("progress");
+
+  const bar =
+    $("progressBar");
+
+
+  if (value === null) {
+
+    wrap.style.display =
+      "none";
+
+    bar.style.width =
+      "0%";
+
+    return;
+
+  }
+
+
+  wrap.style.display =
+    "block";
+
+
+  bar.style.width =
+    Math.max(
+      0,
+      Math.min(
+        100,
+        value
+      )
+    )
+    +
+    "%";
+
+}
+
+
+/* ==========================
+   EMAIL EXTRACTION
+========================== */
+
+function extractEmails(text) {
+
+  const matches =
+    (text || "")
+    .match(
+      /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi
+    )
+    || [];
+
+
+  return [
+    ...new Set(
+      matches.map(
+        x =>
+          x.toLowerCase()
+      )
+    )
+  ];
+
+}
+
 
 function extractEmail(text) {
 
-  const match =
-    (text || "").match(
-      /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i
-    );
+  const emails =
+    extractEmails(text);
 
-  return match
-    ? match[0]
-    : "";
+  return emails[0] || "";
+
 }
 
+
+/* ==========================
+   PHONE
+========================== */
 
 function extractPhone(text) {
 
   const match =
-    (text || "").match(
+    (text || "")
+    .match(
       /(?:\+?1[\s.-]?)?(?:\(?\d{3}\)?[\s.-]?)\d{3}[\s.-]?\d{4}/
     );
+
 
   return match
     ? match[0]
     : "";
+
 }
 
+
+/* ==========================
+   COMPANY
+========================== */
 
 function looksLikeCompany(text) {
 
-  return /\b(LLC|Inc\.?|Incorporated|Corp\.?|Corporation|Company|Co\.?|Ltd\.?|Group|Partners|Agency|Solutions|Services|Health|Insurance|Benefits|Technologies|Consulting|Associates)\b/i
-    .test(text || "");
+  return /\b(LLC|Inc\.?|Incorporated|Corp\.?|Corporation|Company|Co\.?|Ltd\.?|Group|Partners|Agency|Solutions|Services|Health|Insurance|Benefits|Technologies|Consulting|Associates|Manufacturing)\b/i
+    .test(
+      text || ""
+    );
+
 }
 
 
-function extractName(lines) {
+/* ==========================
+   NAME
+========================== */
+
+function extractName(
+  lines,
+  text,
+  email
+) {
+
+  /*
+    Best case:
+    Megan Holt <mholt@example.com>
+  */
+
+  if (email) {
+
+    const escapedEmail =
+      email.replace(
+        /[.*+?^${}()|[\]\\]/g,
+        "\\$&"
+      );
+
+
+    const pattern =
+      new RegExp(
+        "([A-Z][A-Za-z'.-]+(?:\\s+[A-Z][A-Za-z'.-]+){1,3})\\s*<\\s*"
+        +
+        escapedEmail,
+        "i"
+      );
+
+
+    const match =
+      text.match(pattern);
+
+
+    if (match) {
+
+      return clean(
+        match[1]
+        .replace(
+          /^from\s*:\s*/i,
+          ""
+        )
+      );
+
+    }
+
+  }
+
+
+  /*
+    Generic email header:
+    From: Megan Holt <email>
+  */
+
+  const headerMatch =
+    text.match(
+      /(?:from\s*:\s*)?([A-Z][A-Za-z'.-]+(?:\s+[A-Z][A-Za-z'.-]+){1,3})\s*<[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}>/i
+    );
+
+
+  if (headerMatch) {
+
+    return clean(
+      headerMatch[1]
+    );
+
+  }
+
+
+  /*
+    Explicit field label
+  */
 
   const patterns = [
+
     /^name\s*[:\-]\s*(.+)$/i,
+
     /^contact(?: name)?\s*[:\-]\s*(.+)$/i,
+
     /^lead\s*[:\-]\s*(.+)$/i
+
   ];
+
 
   for (const line of lines) {
 
-    for (const pattern of patterns) {
+    for (
+      const pattern of patterns
+    ) {
 
       const match =
         line.match(pattern);
 
+
       if (match) {
-        return clean(match[1]);
+
+        return clean(
+          match[1]
+        );
+
       }
 
     }
 
   }
 
+
+  /*
+    Standalone likely name
+  */
 
   for (const line of lines) {
 
     if (
       line.length < 60 &&
-      /^[A-Z][A-Za-z'.-]+(?:\s+[A-Z][A-Za-z'.-]+){1,3}$/.test(line) &&
+      /^[A-Z][A-Za-z'.-]+(?:\s+[A-Z][A-Za-z'.-]+){1,3}$/
+      .test(line) &&
       !looksLikeCompany(line)
     ) {
+
       return line;
+
     }
 
   }
 
+
   return "";
+
 }
 
 
-function extractCompany(lines, email) {
+/* ==========================
+   COMPANY EXTRACTION
+========================== */
+
+function extractCompany(
+  lines,
+  email
+) {
 
   const patterns = [
+
     /^company\s*[:\-]\s*(.+)$/i,
+
     /^account\s*[:\-]\s*(.+)$/i,
+
     /^organization\s*[:\-]\s*(.+)$/i,
+
     /^employer\s*[:\-]\s*(.+)$/i
+
   ];
+
 
   for (const line of lines) {
 
-    for (const pattern of patterns) {
+    for (
+      const pattern of patterns
+    ) {
 
       const match =
         line.match(pattern);
 
+
       if (match) {
-        return clean(match[1]);
+
+        return clean(
+          match[1]
+        );
+
       }
 
     }
@@ -365,31 +992,52 @@ function extractCompany(lines, email) {
   }
 
 
+  /*
+    Search visible text for
+    something company-like.
+  */
+
   for (const line of lines) {
 
     if (
       line.length < 100 &&
-      looksLikeCompany(line)
+      looksLikeCompany(line) &&
+      !/@/.test(line)
     ) {
+
       return line;
+
     }
 
   }
 
 
+  /*
+    Fallback to email domain.
+  */
+
   if (email) {
 
     const domain =
-      ((email.split("@")[1] || "")
-      .split(".")[0] || "");
+      (
+        (
+          email.split("@")[1]
+          || ""
+        )
+        .split(".")[0]
+        || ""
+      );
+
 
     const common = [
+
       "gmail",
       "yahoo",
       "outlook",
       "hotmail",
       "icloud",
       "aol"
+
     ];
 
 
@@ -401,33 +1049,61 @@ function extractCompany(lines, email) {
     ) {
 
       return domain
-        .replace(/[-_]/g, " ")
-        .replace(/\b\w/g, c => c.toUpperCase());
+
+        .replace(
+          /[-_]/g,
+          " "
+        )
+
+        .replace(
+          /\b\w/g,
+          c =>
+            c.toUpperCase()
+        );
+
     }
 
   }
 
+
   return "";
+
 }
 
+
+/* ==========================
+   JOB TITLE
+========================== */
 
 function extractTitle(lines) {
 
   const patterns = [
+
     /^title\s*[:\-]\s*(.+)$/i,
+
     /^job title\s*[:\-]\s*(.+)$/i,
+
     /^role\s*[:\-]\s*(.+)$/i
+
   ];
+
 
   for (const line of lines) {
 
-    for (const pattern of patterns) {
+    for (
+      const pattern of patterns
+    ) {
 
       const match =
         line.match(pattern);
 
+
       if (match) {
-        return clean(match[1]);
+
+        return clean(
+          match[1]
+        );
+
       }
 
     }
@@ -435,7 +1111,22 @@ function extractTitle(lines) {
   }
 
 
+  const phrases = [
+
+    "director of",
+    "vice president",
+    "human resources",
+    "people operations",
+    "sales manager",
+    "account executive",
+    "benefits consultant",
+    "client solutions"
+
+  ];
+
+
   const words = [
+
     "manager",
     "director",
     "president",
@@ -449,53 +1140,195 @@ function extractTitle(lines) {
     "consultant",
     "coordinator",
     "administrator",
-    "vice president",
     "vp",
     "chief",
     "ceo",
     "cfo",
     "coo",
-    "human resources",
     "sales"
+
   ];
 
 
   for (const line of lines) {
 
+    const lower =
+      line.toLowerCase();
+
+
     if (
-      line.length < 90 &&
-      words.some(
-        word =>
-          line.toLowerCase()
-          .includes(word)
+      line.length < 100 &&
+      (
+        phrases.some(
+          phrase =>
+            lower.includes(
+              phrase
+            )
+        )
+        ||
+        words.some(
+          word =>
+            new RegExp(
+              "\\b"
+              +
+              word.replace(
+                / /g,
+                "\\s+"
+              )
+              +
+              "\\b",
+              "i"
+            )
+            .test(lower)
+        )
       )
     ) {
+
       return line;
+
     }
 
   }
 
+
   return "";
+
 }
 
 
-/* -----------------------------
-   NEXT STEP ENGINE
------------------------------ */
+/* ==========================
+   ADDRESS
+========================== */
 
-function includesAny(text, phrases) {
+function extractAddress(text) {
+
+  const lines =
+    getLines(text);
+
+
+  for (const line of lines) {
+
+    if (
+      /^\d{1,6}\s+.+\b(?:Street|St\.?|Avenue|Ave\.?|Road|Rd\.?|Drive|Dr\.?|Lane|Ln\.?|Boulevard|Blvd\.?|Court|Ct\.?|Parkway|Pkwy\.?|Way)\b.*\b[A-Z]{2}\s+\d{5}(?:-\d{4})?\b/i
+      .test(line)
+    ) {
+
+      return line;
+
+    }
+
+  }
+
+
+  return "";
+
+}
+
+
+/* ==========================
+   WEBSITE
+========================== */
+
+function extractWebsite(
+  text,
+  email
+) {
+
+  const matches =
+    (text || "")
+    .match(
+      /(?:https?:\/\/)?(?:www\.)?[a-z0-9-]+(?:\.[a-z0-9-]+)+(?:\/[\w\-./?%&=]*)?/gi
+    )
+    || [];
+
+
+  for (const match of matches) {
+
+    if (
+      !match.includes("@") &&
+      !/^\d/.test(match)
+    ) {
+
+      const cleaned =
+        match.replace(
+          /^www\./i,
+          ""
+        );
+
+
+      if (
+        !email ||
+        !email.endsWith(cleaned)
+      ) {
+
+        return match;
+
+      }
+
+    }
+
+  }
+
+
+  return "";
+
+}
+
+
+/* ==========================
+   NEXT STEP ENGINE
+========================== */
+
+function includesAny(
+  text,
+  phrases
+) {
+
   return phrases.some(
     phrase =>
       text.includes(phrase)
   );
+
 }
 
 
-function determineNextStep(text, email, phone) {
+function determineNextStep(
+  text,
+  email,
+  phone
+) {
 
   const source =
-    (text || "").toLowerCase();
+    (text || "")
+    .toLowerCase();
 
+
+  const tomorrowAfternoon =
+    source.includes(
+      "tomorrow afternoon"
+    );
+
+
+  const tomorrow =
+    source.includes(
+      "tomorrow"
+    );
+
+
+  const laterToday =
+    source.includes(
+      "later today"
+    );
+
+
+  const afterThree =
+    /after\s+3(?::00)?\s*(?:pm|p\.m\.)?/i
+    .test(source);
+
+
+  /*
+    Negative
+  */
 
   if (
     includesAny(
@@ -510,40 +1343,84 @@ function determineNextStep(text, email, phone) {
   ) {
 
     return {
+
       step:
         "Close or archive this lead",
 
       reason:
         "Negative or do-not-contact language was detected."
+
     };
 
   }
 
+
+  /*
+    Proposal / quote / pricing
+  */
 
   if (
     includesAny(
       source,
       [
         "proposal",
-        "quote",
-        "pricing",
         "rate sheet",
+        "send pricing",
         "send rates",
-        "send pricing"
+        "pricing",
+        "quote"
       ]
     )
   ) {
 
+    if (
+      tomorrowAfternoon
+    ) {
+
+      return {
+
+        step:
+          "Send proposal and rate sheet by tomorrow afternoon",
+
+        reason:
+          "The contact requested pricing materials and gave an explicit deadline."
+
+      };
+
+    }
+
+
+    if (tomorrow) {
+
+      return {
+
+        step:
+          "Send requested proposal by tomorrow",
+
+        reason:
+          "The contact requested proposal or pricing material with a tomorrow deadline."
+
+      };
+
+    }
+
+
     return {
+
       step:
-        "Send pricing / proposal today",
+        "Send requested pricing / proposal",
 
       reason:
-        "Pricing or proposal language was detected."
+        "Proposal or pricing language was detected."
+
     };
 
   }
 
+
+  /*
+    Callback request
+  */
 
   if (
     includesAny(
@@ -557,16 +1434,55 @@ function determineNextStep(text, email, phone) {
     )
   ) {
 
+    if (
+      laterToday &&
+      afterThree
+    ) {
+
+      return {
+
+        step:
+          "Call back after 3:00 PM today",
+
+        reason:
+          "The contact explicitly said they are available for a callback after 3 PM."
+
+      };
+
+    }
+
+
+    if (laterToday) {
+
+      return {
+
+        step:
+          "Call back later today",
+
+        reason:
+          "The contact explicitly requested or invited a callback today."
+
+      };
+
+    }
+
+
     return {
+
       step:
         "Call within 1 business day",
 
       reason:
-        "An explicit call-back signal was detected."
+        "An explicit callback signal was detected."
+
     };
 
   }
 
+
+  /*
+    Meeting
+  */
 
   if (
     includesAny(
@@ -582,15 +1498,21 @@ function determineNextStep(text, email, phone) {
   ) {
 
     return {
+
       step:
         "Confirm meeting and send a short recap",
 
       reason:
         "Meeting or appointment language was detected."
+
     };
 
   }
 
+
+  /*
+    Generic follow-up
+  */
 
   if (
     includesAny(
@@ -606,21 +1528,28 @@ function determineNextStep(text, email, phone) {
   ) {
 
     return {
+
       step:
         "Follow up in 3 business days",
 
       reason:
         "Explicit follow-up language was detected."
+
     };
 
   }
 
+
+  /*
+    Positive buying intent
+  */
 
   if (
     includesAny(
       source,
       [
         "interested",
+        "interested in moving forward",
         "ready to move forward",
         "move forward",
         "sounds good",
@@ -632,24 +1561,32 @@ function determineNextStep(text, email, phone) {
   ) {
 
     return {
+
       step:
         "Contact within 1 business day",
 
       reason:
-        "Buying-interest or forward-movement language was detected."
+        "The contact appears interested in moving forward."
+
     };
 
   }
 
 
+  /*
+    Fallbacks
+  */
+
   if (email) {
 
     return {
+
       step:
         "Send an introductory follow-up email",
 
       reason:
-        "No stronger signal was detected, but an email address is available."
+        "No stronger action signal was detected, but an email address is available."
+
     };
 
   }
@@ -658,43 +1595,56 @@ function determineNextStep(text, email, phone) {
   if (phone) {
 
     return {
+
       step:
         "Call the contact",
 
       reason:
-        "No stronger signal was detected, but a phone number is available."
+        "No stronger action signal was detected, but a phone number is available."
+
     };
 
   }
 
 
   return {
+
     step:
       "Review and make first outreach",
 
     reason:
       "A record was created but no explicit action signal was detected."
+
   };
+
 }
 
 
-/* -----------------------------
-   OCR PARSER
------------------------------ */
+/* ==========================
+   PARSE OCR
+========================== */
 
 function parseOCR(text) {
 
   const lines =
     getLines(text);
 
+
   const email =
     extractEmail(text);
+
 
   const phone =
     extractPhone(text);
 
+
   const name =
-    extractName(lines);
+    extractName(
+      lines,
+      text,
+      email
+    );
+
 
   const company =
     extractCompany(
@@ -702,8 +1652,21 @@ function parseOCR(text) {
       email
     );
 
+
   const title =
     extractTitle(lines);
+
+
+  const address =
+    extractAddress(text);
+
+
+  const website =
+    extractWebsite(
+      text,
+      email
+    );
+
 
   const action =
     determineNextStep(
@@ -727,9 +1690,16 @@ function parseOCR(text) {
 
     phone,
 
+    address,
+
+    website,
+
     notes:
       clean(text)
-      .slice(0, 900),
+      .slice(
+        0,
+        1200
+      ),
 
     rawOCR:
       text,
@@ -747,12 +1717,13 @@ function parseOCR(text) {
       ""
 
   };
+
 }
 
 
-/* -----------------------------
-   CREATE RECORD FIRST
------------------------------ */
+/* ==========================
+   CREATE PROCESSING RECORD
+========================== */
 
 function createProcessingRecord(file) {
 
@@ -784,6 +1755,12 @@ function createProcessingRecord(file) {
     phone:
       "",
 
+    address:
+      "",
+
+    website:
+      "",
+
     notes:
       "",
 
@@ -808,28 +1785,35 @@ function createProcessingRecord(file) {
   const records =
     loadRecords();
 
+
   records.unshift(
     record
   );
+
 
   saveRecords(
     records
   );
 
+
   renderRecords();
 
+
   return record.id;
+
 }
 
 
-/* -----------------------------
-   IMAGE PROCESSING
------------------------------ */
+/* ==========================
+   OCR PROCESSING
+========================== */
 
 async function processImage(file) {
 
   const id =
-    createProcessingRecord(file);
+    createProcessingRecord(
+      file
+    );
 
 
   try {
@@ -839,12 +1823,15 @@ async function processImage(file) {
       "good"
     );
 
+
     setProgress(5);
 
 
     if (
       !file ||
-      !file.type.startsWith("image/")
+      !file.type.startsWith(
+        "image/"
+      )
     ) {
 
       throw new Error(
@@ -854,7 +1841,9 @@ async function processImage(file) {
     }
 
 
-    if (currentObjectURL) {
+    if (
+      currentObjectURL
+    ) {
 
       URL.revokeObjectURL(
         currentObjectURL
@@ -864,11 +1853,14 @@ async function processImage(file) {
 
 
     currentObjectURL =
-      URL.createObjectURL(file);
+      URL.createObjectURL(
+        file
+      );
 
 
     $("preview").src =
       currentObjectURL;
+
 
     $("preview").style.display =
       "block";
@@ -880,7 +1872,7 @@ async function processImage(file) {
     ) {
 
       throw new Error(
-        "Tesseract did not load from the CDN. Try refreshing Safari."
+        "Tesseract did not load from the CDN. Refresh Safari and try again."
       );
 
     }
@@ -902,8 +1894,13 @@ async function processImage(file) {
 
                 const percent =
                   Math.round(
-                    (message.progress || 0)
-                    * 100
+                    (
+                      message.progress
+                      ||
+                      0
+                    )
+                    *
+                    100
                   );
 
 
@@ -918,8 +1915,11 @@ async function processImage(file) {
 
 
                 setProgress(
-                  10 +
-                  percent * 0.8
+                  10
+                  +
+                  percent
+                  *
+                  .8
                 );
 
               }
@@ -941,7 +1941,8 @@ async function processImage(file) {
 
     const text =
       (
-        result.data.text ||
+        result.data.text
+        ||
         ""
       )
       .trim();
@@ -960,6 +1961,7 @@ async function processImage(file) {
       "OCR complete. Updating CRM record…",
       "good"
     );
+
 
     setProgress(95);
 
@@ -980,7 +1982,8 @@ async function processImage(file) {
 
 
     setTimeout(
-      () => setProgress(null),
+      () =>
+        setProgress(null),
       800
     );
 
@@ -988,7 +1991,9 @@ async function processImage(file) {
 
   catch (error) {
 
-    console.error(error);
+    console.error(
+      error
+    );
 
 
     updateRecord(
@@ -1002,12 +2007,15 @@ async function processImage(file) {
           "error",
 
         error:
-          error?.message ||
+          error?.message
+          ||
           String(error),
 
         rawOCR:
-          error?.stack ||
-          error?.message ||
+          error?.stack
+          ||
+          error?.message
+          ||
           String(error),
 
         nextStep:
@@ -1027,7 +2035,8 @@ async function processImage(file) {
       "Error — the record was created, but OCR failed: "
       +
       (
-        error?.message ||
+        error?.message
+        ||
         String(error)
       ),
       "bad"
@@ -1045,20 +2054,23 @@ async function processImage(file) {
 }
 
 
-/* -----------------------------
-   RECORD LIST
------------------------------ */
+/* ==========================
+   RENDER RECORDS
+========================== */
 
 function renderRecords() {
 
   const records =
     loadRecords();
 
+
   const container =
     $("records");
 
 
-  if (!records.length) {
+  if (
+    !records.length
+  ) {
 
     container.innerHTML =
       '<div class="empty">No records yet. Add a photo or create a demo record.</div>';
@@ -1087,7 +2099,8 @@ function renderRecords() {
               <div class="contactName">
                 ${
                   esc(
-                    record.name ||
+                    record.name
+                    ||
                     "Potential Contact"
                   )
                 }
@@ -1109,16 +2122,12 @@ function renderRecords() {
             </div>
 
             <span
-              class="badge ${
-                esc(
-                  record.status ||
-                  ""
-                )
-              }"
+              class="badge ${esc(record.status || "")}"
             >
               ${
                 esc(
-                  record.status ||
+                  record.status
+                  ||
                   "saved"
                 )
               }
@@ -1134,7 +2143,8 @@ function renderRecords() {
 
             ${
               esc(
-                record.nextStep ||
+                record.nextStep
+                ||
                 ""
               )
             }
@@ -1191,7 +2201,8 @@ function renderRecords() {
           event => {
 
             if (
-              event.key === "Enter" ||
+              event.key === "Enter"
+              ||
               event.key === " "
             ) {
 
@@ -1208,9 +2219,9 @@ function renderRecords() {
 }
 
 
-/* -----------------------------
-   RECORD DETAIL
------------------------------ */
+/* ==========================
+   DETAIL VIEW
+========================== */
 
 function openRecord(id) {
 
@@ -1232,54 +2243,96 @@ function openRecord(id) {
 
 
   $("detailName").textContent =
-    record.name ||
+    record.name
+    ||
     "Potential Contact";
 
+
   $("detailCompany").textContent =
-    record.company ||
+    record.company
+    ||
     "";
+
 
   $("detailStatus").textContent =
-    record.status +
+    (
+      record.status
+      ||
+      ""
+    )
+    +
     (
       record.error
-      ? " — " + record.error
-      : ""
+      ?
+      " — "
+      +
+      record.error
+      :
+      ""
     );
 
+
   $("detailTitle").textContent =
-    record.title ||
+    record.title
+    ||
     "Not detected";
+
 
   $("detailEmail").textContent =
-    record.email ||
+    record.email
+    ||
     "Not detected";
+
 
   $("detailPhone").textContent =
-    record.phone ||
+    record.phone
+    ||
     "Not detected";
 
+
+  $("detailAddress").textContent =
+    record.address
+    ||
+    "Not detected";
+
+
+  $("detailWebsite").textContent =
+    record.website
+    ||
+    "Not detected";
+
+
   $("detailNext").textContent =
-    record.nextStep ||
+    record.nextStep
+    ||
     "";
+
 
   $("detailReason").textContent =
-    record.nextReason ||
+    record.nextReason
+    ||
     "";
+
 
   $("detailNotes").textContent =
-    record.notes ||
+    record.notes
+    ||
     "";
 
+
   $("detailOCR").textContent =
-    record.rawOCR ||
-    record.error ||
+    record.rawOCR
+    ||
+    record.error
+    ||
     "No OCR text yet.";
 
 
   $("modal")
     .classList
-    .add("open");
+    .add(
+      "open"
+    );
 
 }
 
@@ -1288,16 +2341,20 @@ function closeModal() {
 
   $("modal")
     .classList
-    .remove("open");
+    .remove(
+      "open"
+    );
+
 
   currentDetailId =
     null;
+
 }
 
 
-/* -----------------------------
-   EVENTS
------------------------------ */
+/* ==========================
+   PHOTO EVENT
+========================== */
 
 $("photo")
 .addEventListener(
@@ -1305,7 +2362,8 @@ $("photo")
   function () {
 
     const file =
-      this.files &&
+      this.files
+      &&
       this.files[0];
 
 
@@ -1321,15 +2379,17 @@ $("photo")
     }
 
 
-    processImage(file);
+    processImage(
+      file
+    );
 
   }
 );
 
 
-/* -----------------------------
+/* ==========================
    DEMO RECORD
------------------------------ */
+========================== */
 
 $("demoButton")
 .addEventListener(
@@ -1349,31 +2409,37 @@ $("demoButton")
         "Demo",
 
       name:
-        "Jordan Smith",
+        "Megan Holt",
 
       company:
-        "Northstar Benefits",
+        "Lakefront Manufacturing Group",
 
       title:
-        "HR Director",
+        "Director of People Operations",
 
       email:
-        "jordan@northstarbenefits.com",
+        "mholt@lakefrontmfg.com",
 
       phone:
-        "414-555-0199",
+        "414-555-0148",
+
+      address:
+        "825 River Park Drive, Milwaukee, WI 53204",
+
+      website:
+        "www.lakefrontmfg.com",
 
       notes:
-        "Interested in pricing and asked for a proposal.",
+        "Interested in moving forward. Requested pricing for Bronze and Silver plans and asked for a proposal and rate sheet by tomorrow afternoon.",
 
       rawOCR:
-        "Jordan Smith\nHR Director\nNorthstar Benefits\njordan@northstarbenefits.com\n414-555-0199\nInterested in pricing. Please send proposal.",
+        "Megan Holt <mholt@lakefrontmfg.com>\nDirector of People Operations\nLakefront Manufacturing Group\nmholt@lakefrontmfg.com\n414-555-0148\n825 River Park Drive, Milwaukee, WI 53204\nwww.lakefrontmfg.com\nWe are interested in moving forward. Can you send a proposal and rate sheet by tomorrow afternoon? If easier, call me back later today after 3:00 PM.",
 
       nextStep:
-        "Send pricing / proposal today",
+        "Send proposal and rate sheet by tomorrow afternoon",
 
       nextReason:
-        "Pricing or proposal language was detected.",
+        "The contact requested pricing materials and gave an explicit deadline.",
 
       status:
         "ready",
@@ -1387,25 +2453,32 @@ $("demoButton")
     const records =
       loadRecords();
 
+
     records.unshift(
       demo
     );
+
 
     saveRecords(
       records
     );
 
+
     renderRecords();
 
 
     setStatus(
-      "Demo record created successfully. Local storage and record rendering are working.",
+      "Demo record created successfully.",
       "good"
     );
 
   }
 );
 
+
+/* ==========================
+   MODAL EVENTS
+========================== */
 
 $("closeModal")
 .addEventListener(
@@ -1432,12 +2505,18 @@ $("modal")
 );
 
 
+/* ==========================
+   DELETE RECORD
+========================== */
+
 $("deleteRecord")
 .addEventListener(
   "click",
   () => {
 
-    if (!currentDetailId) {
+    if (
+      !currentDetailId
+    ) {
       return;
     }
 
@@ -1447,7 +2526,9 @@ $("deleteRecord")
         "Delete this CRM record?"
       )
     ) {
+
       return;
+
     }
 
 
@@ -1455,18 +2536,25 @@ $("deleteRecord")
       loadRecords()
       .filter(
         record =>
-          record.id !==
+          record.id
+          !==
           currentDetailId
       )
     );
 
 
     closeModal();
+
+
     renderRecords();
 
   }
 );
 
+
+/* ==========================
+   CLEAR ALL
+========================== */
 
 $("clearAll")
 .addEventListener(
@@ -1483,6 +2571,7 @@ $("clearAll")
         STORAGE_KEY
       );
 
+
       renderRecords();
 
 
@@ -1497,9 +2586,9 @@ $("clearAll")
 );
 
 
-/* -----------------------------
+/* ==========================
    CSV EXPORT
------------------------------ */
+========================== */
 
 $("exportCSV")
 .addEventListener(
@@ -1510,7 +2599,9 @@ $("exportCSV")
       loadRecords();
 
 
-    if (!records.length) {
+    if (
+      !records.length
+    ) {
 
       alert(
         "No records to export."
@@ -1529,6 +2620,8 @@ $("exportCSV")
         "Title",
         "Email",
         "Phone",
+        "Address",
+        "Website",
         "Status",
         "Next Step",
         "Reason",
@@ -1544,6 +2637,8 @@ $("exportCSV")
           record.title,
           record.email,
           record.phone,
+          record.address,
+          record.website,
           record.status,
           record.nextStep,
           record.nextReason,
@@ -1566,7 +2661,9 @@ $("exportCSV")
               '"'
               +
               String(
-                value || ""
+                value
+                ||
+                ""
               )
               .replace(
                 /"/g,
@@ -1605,8 +2702,10 @@ $("exportCSV")
     link.href =
       url;
 
+
     link.download =
       "snapcrm-records.csv";
+
 
     link.click();
 
@@ -1618,6 +2717,10 @@ $("exportCSV")
   }
 );
 
+
+/* ==========================
+   START
+========================== */
 
 renderRecords();
 
