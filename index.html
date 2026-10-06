@@ -4,158 +4,48 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="theme-color" content="#0b0b0d" />
-<title>SnapCRM Prototype</title>
+<title>SnapCRM Prototype v0.4</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 
 <style>
-:root{
-  color-scheme:dark;
-  --bg:#0b0b0d;
-  --card:#17171c;
-  --line:#2d2d34;
-  --muted:#999aa3;
-  --good:#8ee6a6;
-  --warn:#ffd36c;
-  --bad:#ff9297;
-}
+:root{color-scheme:dark;--bg:#0b0b0d;--card:#17171c;--line:#2d2d34;--muted:#999aa3;--good:#8ee6a6;--warn:#ffd36c;--bad:#ff9297}
 *{box-sizing:border-box}
-body{
-  margin:0;
-  background:var(--bg);
-  color:#fff;
-  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif
-}
+body{margin:0;background:var(--bg);color:#fff;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif}
 main{width:min(850px,100%);margin:auto;padding:22px 15px 70px}
 h1{margin:4px 0;font-size:31px;letter-spacing:-.04em}
 .subtitle{color:var(--muted);line-height:1.45;margin-bottom:18px}
-.card{
-  background:var(--card);
-  border:1px solid var(--line);
-  border-radius:18px;
-  padding:16px;
-  margin:12px 0
-}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin:12px 0}
 .row{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
-.fileButton,button{
-  appearance:none;
-  border:0;
-  border-radius:13px;
-  padding:13px 15px;
-  font-size:15px;
-  font-weight:700;
-  background:#fff;
-  color:#111;
-  cursor:pointer
-}
+.fileButton,button{appearance:none;border:0;border-radius:13px;padding:13px 15px;font-size:15px;font-weight:700;background:#fff;color:#111;cursor:pointer}
 button.secondary{background:#292930;color:#fff}
 button.danger{background:#422326;color:#ffd8da}
 input[type=file]{position:absolute;left:-10000px}
-#preview{
-  display:none;
-  width:100%;
-  max-height:410px;
-  object-fit:contain;
-  border-radius:13px;
-  margin-top:14px;
-  background:#050507
-}
-.statusBox{
-  margin-top:12px;
-  border:1px solid var(--line);
-  border-radius:13px;
-  padding:12px;
-  background:#111116;
-  font-size:14px;
-  line-height:1.45
-}
+#preview{display:none;width:100%;max-height:410px;object-fit:contain;border-radius:13px;margin-top:14px;background:#050507}
+.statusBox{margin-top:12px;border:1px solid var(--line);border-radius:13px;padding:12px;background:#111116;font-size:14px;line-height:1.45}
 .statusGood{color:var(--good)}
 .statusWarn{color:var(--warn)}
 .statusBad{color:var(--bad)}
-.progress{
-  width:100%;
-  height:6px;
-  background:#25252b;
-  border-radius:999px;
-  overflow:hidden;
-  margin-top:9px;
-  display:none
-}
-.progressBar{
-  height:100%;
-  width:0%;
-  background:#fff;
-  transition:width .15s ease
-}
-.contactCard{
-  border:1px solid var(--line);
-  background:#111116;
-  border-radius:15px;
-  padding:14px;
-  margin-top:10px;
-  cursor:pointer
-}
+.progress{width:100%;height:6px;background:#25252b;border-radius:999px;overflow:hidden;margin-top:9px;display:none}
+.progressBar{height:100%;width:0;background:#fff;transition:width .15s ease}
+.contactCard{border:1px solid var(--line);background:#111116;border-radius:15px;padding:14px;margin-top:10px;cursor:pointer}
 .contactCard:active{transform:scale(.995)}
 .contactTop{display:flex;justify-content:space-between;gap:10px}
 .contactName{font-size:18px;font-weight:750}
 .contactCompany{color:var(--muted);font-size:13px;margin-top:3px}
 .next{margin-top:10px;font-size:14px}
-.badge{
-  display:inline-block;
-  padding:4px 8px;
-  border-radius:999px;
-  background:#292930;
-  color:#ddd;
-  font-size:11px
-}
+.badge{display:inline-block;padding:4px 8px;border-radius:999px;background:#292930;color:#ddd;font-size:11px}
+.badge.processing{color:var(--warn)}
+.badge.ready{color:var(--good)}
+.badge.error{color:var(--bad)}
 .empty{color:var(--muted);padding:12px 0}
 .small{font-size:12px;color:var(--muted);line-height:1.45}
-
-.modal{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.72);
-  display:none;
-  align-items:flex-end;
-  justify-content:center;
-  padding:12px;
-  z-index:99
-}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.72);display:none;align-items:flex-end;justify-content:center;padding:12px;z-index:99}
 .modal.open{display:flex}
-.sheet{
-  width:min(760px,100%);
-  max-height:88vh;
-  overflow:auto;
-  background:#17171c;
-  border:1px solid var(--line);
-  border-radius:22px 22px 16px 16px;
-  padding:18px
-}
+.sheet{width:min(760px,100%);max-height:88vh;overflow:auto;background:#17171c;border:1px solid var(--line);border-radius:22px 22px 16px 16px;padding:18px}
 .sheet h2{margin:0 0 4px}
-.detailLabel{
-  color:var(--muted);
-  font-size:11px;
-  text-transform:uppercase;
-  letter-spacing:.06em;
-  margin-top:15px
-}
-.detailValue{
-  font-size:15px;
-  line-height:1.45;
-  margin-top:4px;
-  white-space:pre-wrap;
-  word-break:break-word
-}
-.raw{
-  background:#0d0d10;
-  border:1px solid var(--line);
-  border-radius:12px;
-  padding:12px;
-  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
-  font-size:12px;
-  white-space:pre-wrap;
-  max-height:260px;
-  overflow:auto
-}
+.detailLabel{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em;margin-top:15px}
+.detailValue{font-size:15px;line-height:1.45;margin-top:4px;white-space:pre-wrap;word-break:break-word}
+.raw{background:#0d0d10;border:1px solid var(--line);border-radius:12px;padding:12px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;white-space:pre-wrap;max-height:260px;overflow:auto}
 </style>
 </head>
 
@@ -163,25 +53,16 @@ input[type=file]{position:absolute;left:-10000px}
 <main>
 
 <h1>SnapCRM</h1>
-
 <div class="subtitle">
-  Photograph a lead on your computer screen. SnapCRM reads it,
-  creates the record, and decides the next action automatically.
+  Photograph a lead on your computer screen. SnapCRM creates the record immediately, then fills it from OCR.
 </div>
 
 <div class="card">
 
   <div class="row">
-    <label class="fileButton" for="photo">
-      Take / Choose Photo
-    </label>
-
-    <input
-      id="photo"
-      type="file"
-      accept="image/*"
-      capture="environment"
-    />
+    <label class="fileButton" for="photo">Take / Choose Photo</label>
+    <input id="photo" type="file" accept="image/*" />
+    <button id="demoButton" class="secondary">Create Demo Record</button>
   </div>
 
   <img id="preview" alt="Selected image preview" />
@@ -201,10 +82,7 @@ input[type=file]{position:absolute;left:-10000px}
 
   <div class="row" style="justify-content:space-between">
     <h2 style="margin:0">CRM Records</h2>
-
-    <button id="exportCSV" class="secondary">
-      Export CSV
-    </button>
+    <button id="exportCSV" class="secondary">Export CSV</button>
   </div>
 
   <div id="records"></div>
@@ -219,8 +97,8 @@ input[type=file]{position:absolute;left:-10000px}
   </button>
 
   <p class="small">
-    Prototype only. OCR runs in your browser using Tesseract.js.
-    Records are stored in this browser's local storage.
+    If Demo Record works but photo OCR does not, storage/rendering are fine and the OCR path is the problem.
+    If Demo Record also fails, the page is cached or JavaScript is not running.
   </p>
 
 </div>
@@ -245,6 +123,9 @@ input[type=file]{position:absolute;left:-10000px}
 
     </div>
 
+    <div class="detailLabel">Status</div>
+    <div id="detailStatus" class="detailValue"></div>
+
     <div class="detailLabel">Title</div>
     <div id="detailTitle" class="detailValue"></div>
 
@@ -263,15 +144,11 @@ input[type=file]{position:absolute;left:-10000px}
     <div class="detailLabel">Notes</div>
     <div id="detailNotes" class="detailValue"></div>
 
-    <div class="detailLabel">Raw OCR</div>
+    <div class="detailLabel">Raw OCR / error</div>
     <div id="detailOCR" class="raw"></div>
 
     <div class="row" style="margin-top:16px">
-
-      <button id="deleteRecord" class="danger">
-        Delete Record
-      </button>
-
+      <button id="deleteRecord" class="danger">Delete Record</button>
     </div>
 
   </div>
@@ -281,7 +158,7 @@ input[type=file]{position:absolute;left:-10000px}
 
 <script>
 
-const STORAGE_KEY = "snapcrm_contacts_v2";
+const STORAGE_KEY = "snapcrm_contacts_v4";
 
 let currentDetailId = null;
 let currentObjectURL = null;
@@ -300,138 +177,119 @@ function esc(text) {
 
 
 function clean(text) {
-  return (text || "")
-    .replace(/\s+/g, " ")
-    .trim();
+  return (text || "").replace(/\s+/g, " ").trim();
 }
 
 
 function getLines(text) {
-
   return (text || "")
     .split(/\r?\n/)
-    .map(line => line.trim())
-    .filter(line => line.length > 1);
+    .map(x => x.trim())
+    .filter(x => x.length > 1);
+}
 
+
+function makeId() {
+  return crypto.randomUUID
+    ? crypto.randomUUID()
+    : String(Date.now()) + Math.random().toString(16).slice(2);
 }
 
 
 function loadRecords() {
-
   try {
-
-    return JSON.parse(
-      localStorage.getItem(STORAGE_KEY)
-    ) || [];
-
+    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
   } catch {
-
     return [];
-
   }
-
 }
 
 
 function saveRecords(records) {
-
-  localStorage.setItem(
-    STORAGE_KEY,
-    JSON.stringify(records)
-  );
-
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
 }
 
 
 function setStatus(message, type = "") {
 
-  const element = $("status");
+  const el = $("status");
 
-  element.className =
-    "statusBox";
+  el.className = "statusBox";
 
-  if (type === "good") {
-    element.classList.add("statusGood");
-  }
+  if (type === "good") el.classList.add("statusGood");
+  if (type === "warn") el.classList.add("statusWarn");
+  if (type === "bad") el.classList.add("statusBad");
 
-  if (type === "warn") {
-    element.classList.add("statusWarn");
-  }
-
-  if (type === "bad") {
-    element.classList.add("statusBad");
-  }
-
-  element.textContent =
-    message;
-
+  el.textContent = message;
 }
 
 
 function setProgress(value) {
 
-  const wrap =
-    $("progress");
-
-  const bar =
-    $("progressBar");
+  const wrap = $("progress");
+  const bar = $("progressBar");
 
   if (value === null) {
-
-    wrap.style.display =
-      "none";
-
-    bar.style.width =
-      "0%";
-
+    wrap.style.display = "none";
+    bar.style.width = "0%";
     return;
-
   }
 
-  wrap.style.display =
-    "block";
+  wrap.style.display = "block";
 
   bar.style.width =
-    Math.max(
-      0,
-      Math.min(100, value)
-    )
-    + "%";
-
+    Math.max(0, Math.min(100, value)) + "%";
 }
 
 
-/* -----------------------------------------
+function updateRecord(id, patch) {
+
+  const records = loadRecords();
+
+  const i =
+    records.findIndex(
+      r => r.id === id
+    );
+
+  if (i < 0) return;
+
+  records[i] = {
+    ...records[i],
+    ...patch
+  };
+
+  saveRecords(records);
+  renderRecords();
+}
+
+
+/* -----------------------------
    FIELD EXTRACTION
------------------------------------------ */
+----------------------------- */
 
 function extractEmail(text) {
 
   const match =
-    (text || "")
-    .match(
+    (text || "").match(
       /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i
     );
 
   return match
     ? match[0]
     : "";
-
 }
 
 
 function extractPhone(text) {
 
   const match =
-    (text || "")
-    .match(
-      /(?:\+?1[\s.-]?)?(?:\(?\d{3}\)?[\s.-]?)\d{3}[\s.-]?\d{4}/g
+    (text || "").match(
+      /(?:\+?1[\s.-]?)?(?:\(?\d{3}\)?[\s.-]?)\d{3}[\s.-]?\d{4}/
     );
 
   return match
     ? match[0]
     : "";
-
 }
 
 
@@ -439,36 +297,26 @@ function looksLikeCompany(text) {
 
   return /\b(LLC|Inc\.?|Incorporated|Corp\.?|Corporation|Company|Co\.?|Ltd\.?|Group|Partners|Agency|Solutions|Services|Health|Insurance|Benefits|Technologies|Consulting|Associates)\b/i
     .test(text || "");
-
 }
 
 
 function extractName(lines) {
 
-  const labeledPatterns = [
-
+  const patterns = [
     /^name\s*[:\-]\s*(.+)$/i,
-
     /^contact(?: name)?\s*[:\-]\s*(.+)$/i,
-
     /^lead\s*[:\-]\s*(.+)$/i
-
   ];
-
 
   for (const line of lines) {
 
-    for (const pattern of labeledPatterns) {
+    for (const pattern of patterns) {
 
       const match =
         line.match(pattern);
 
       if (match) {
-
-        return clean(
-          match[1]
-        );
-
+        return clean(match[1]);
       }
 
     }
@@ -480,50 +328,36 @@ function extractName(lines) {
 
     if (
       line.length < 60 &&
-      /^[A-Z][A-Za-z'.-]+(?:\s+[A-Z][A-Za-z'.-]+){1,3}$/
-      .test(line) &&
+      /^[A-Z][A-Za-z'.-]+(?:\s+[A-Z][A-Za-z'.-]+){1,3}$/.test(line) &&
       !looksLikeCompany(line)
     ) {
-
       return line;
-
     }
 
   }
 
   return "";
-
 }
 
 
 function extractCompany(lines, email) {
 
-  const labeledPatterns = [
-
+  const patterns = [
     /^company\s*[:\-]\s*(.+)$/i,
-
     /^account\s*[:\-]\s*(.+)$/i,
-
     /^organization\s*[:\-]\s*(.+)$/i,
-
     /^employer\s*[:\-]\s*(.+)$/i
-
   ];
-
 
   for (const line of lines) {
 
-    for (const pattern of labeledPatterns) {
+    for (const pattern of patterns) {
 
       const match =
         line.match(pattern);
 
       if (match) {
-
-        return clean(
-          match[1]
-        );
-
+        return clean(match[1]);
       }
 
     }
@@ -537,9 +371,7 @@ function extractCompany(lines, email) {
       line.length < 100 &&
       looksLikeCompany(line)
     ) {
-
       return line;
-
     }
 
   }
@@ -548,10 +380,10 @@ function extractCompany(lines, email) {
   if (email) {
 
     const domain =
-      (email.split("@")[1] || "")
-      .split(".")[0] || "";
+      ((email.split("@")[1] || "")
+      .split(".")[0] || "");
 
-    const commonDomains = [
+    const common = [
       "gmail",
       "yahoo",
       "outlook",
@@ -563,54 +395,39 @@ function extractCompany(lines, email) {
 
     if (
       domain &&
-      !commonDomains.includes(
+      !common.includes(
         domain.toLowerCase()
       )
     ) {
 
       return domain
         .replace(/[-_]/g, " ")
-        .replace(
-          /\b\w/g,
-          character =>
-            character.toUpperCase()
-        );
-
+        .replace(/\b\w/g, c => c.toUpperCase());
     }
 
   }
 
   return "";
-
 }
 
 
 function extractTitle(lines) {
 
-  const labeledPatterns = [
-
+  const patterns = [
     /^title\s*[:\-]\s*(.+)$/i,
-
     /^job title\s*[:\-]\s*(.+)$/i,
-
     /^role\s*[:\-]\s*(.+)$/i
-
   ];
-
 
   for (const line of lines) {
 
-    for (const pattern of labeledPatterns) {
+    for (const pattern of patterns) {
 
       const match =
         line.match(pattern);
 
       if (match) {
-
-        return clean(
-          match[1]
-        );
-
+        return clean(match[1]);
       }
 
     }
@@ -618,8 +435,7 @@ function extractTitle(lines) {
   }
 
 
-  const titleWords = [
-
+  const words = [
     "manager",
     "director",
     "president",
@@ -641,7 +457,6 @@ function extractTitle(lines) {
     "coo",
     "human resources",
     "sales"
-
   ];
 
 
@@ -649,48 +464,37 @@ function extractTitle(lines) {
 
     if (
       line.length < 90 &&
-      titleWords.some(
+      words.some(
         word =>
-          line
-          .toLowerCase()
+          line.toLowerCase()
           .includes(word)
       )
     ) {
-
       return line;
-
     }
 
   }
 
   return "";
-
 }
 
 
-/* -----------------------------------------
+/* -----------------------------
    NEXT STEP ENGINE
------------------------------------------ */
+----------------------------- */
 
 function includesAny(text, phrases) {
-
   return phrases.some(
     phrase =>
       text.includes(phrase)
   );
-
 }
 
 
-function determineNextStep(
-  text,
-  email,
-  phone
-) {
+function determineNextStep(text, email, phone) {
 
   const source =
-    (text || "")
-    .toLowerCase();
+    (text || "").toLowerCase();
 
 
   if (
@@ -871,18 +675,14 @@ function determineNextStep(
     reason:
       "A record was created but no explicit action signal was detected."
   };
-
 }
 
 
-/* -----------------------------------------
-   RECORD GENERATION
------------------------------------------ */
+/* -----------------------------
+   OCR PARSER
+----------------------------- */
 
-function buildRecord(
-  text,
-  fileName
-) {
+function parseOCR(text) {
 
   const lines =
     getLines(text);
@@ -915,18 +715,6 @@ function buildRecord(
 
   return {
 
-    id:
-      crypto.randomUUID
-      ? crypto.randomUUID()
-      : String(Date.now()),
-
-    createdAt:
-      new Date()
-      .toISOString(),
-
-    sourceFile:
-      fileName || "Image",
-
     name:
       name ||
       "Potential Contact",
@@ -950,27 +738,108 @@ function buildRecord(
       action.step,
 
     nextReason:
-      action.reason
+      action.reason,
+
+    status:
+      "ready",
+
+    error:
+      ""
 
   };
-
 }
 
 
-/* -----------------------------------------
-   AUTOMATIC IMAGE PROCESSING
------------------------------------------ */
+/* -----------------------------
+   CREATE RECORD FIRST
+----------------------------- */
+
+function createProcessingRecord(file) {
+
+  const record = {
+
+    id:
+      makeId(),
+
+    createdAt:
+      new Date()
+      .toISOString(),
+
+    sourceFile:
+      file?.name ||
+      "Image",
+
+    name:
+      "Processing capture…",
+
+    company:
+      "",
+
+    title:
+      "",
+
+    email:
+      "",
+
+    phone:
+      "",
+
+    notes:
+      "",
+
+    rawOCR:
+      "",
+
+    nextStep:
+      "Waiting for OCR",
+
+    nextReason:
+      "The image is still being processed.",
+
+    status:
+      "processing",
+
+    error:
+      ""
+
+  };
+
+
+  const records =
+    loadRecords();
+
+  records.unshift(
+    record
+  );
+
+  saveRecords(
+    records
+  );
+
+  renderRecords();
+
+  return record.id;
+}
+
+
+/* -----------------------------
+   IMAGE PROCESSING
+----------------------------- */
 
 async function processImage(file) {
+
+  const id =
+    createProcessingRecord(file);
+
 
   try {
 
     setStatus(
-      "Image selected successfully. Loading preview…",
+      "Image accepted. Record created. Starting OCR…",
       "good"
     );
 
-    setProgress(2);
+    setProgress(5);
 
 
     if (
@@ -1005,21 +874,13 @@ async function processImage(file) {
       "block";
 
 
-    setStatus(
-      "Upload successful. Starting OCR automatically…",
-      "good"
-    );
-
-    setProgress(6);
-
-
     if (
       typeof Tesseract ===
       "undefined"
     ) {
 
       throw new Error(
-        "OCR library did not load. Refresh the page and try again."
+        "Tesseract did not load from the CDN. Try refreshing Safari."
       );
 
     }
@@ -1089,56 +950,38 @@ async function processImage(file) {
     if (!text) {
 
       throw new Error(
-        "OCR completed but no readable text was found in the image."
+        "OCR finished but found no readable text."
       );
 
     }
 
 
     setStatus(
-      "OCR complete. Building CRM record…",
+      "OCR complete. Updating CRM record…",
       "good"
     );
 
-    setProgress(94);
+    setProgress(95);
 
 
-    const record =
-      buildRecord(
-        text,
-        file.name
-      );
-
-
-    const records =
-      loadRecords();
-
-
-    records.unshift(
-      record
+    updateRecord(
+      id,
+      parseOCR(text)
     );
-
-
-    saveRecords(
-      records
-    );
-
-
-    renderRecords();
 
 
     setProgress(100);
 
 
     setStatus(
-      "Success — CRM record created automatically. Tap the new record below to view details.",
+      "Success — record updated from OCR. Tap it below to inspect the fields.",
       "good"
     );
 
 
     setTimeout(
       () => setProgress(null),
-      900
+      800
     );
 
   }
@@ -1147,10 +990,41 @@ async function processImage(file) {
 
     console.error(error);
 
+
+    updateRecord(
+      id,
+      {
+
+        name:
+          "Processing failed",
+
+        status:
+          "error",
+
+        error:
+          error?.message ||
+          String(error),
+
+        rawOCR:
+          error?.stack ||
+          error?.message ||
+          String(error),
+
+        nextStep:
+          "Review processing error",
+
+        nextReason:
+          "The CRM record was created, but OCR did not finish successfully."
+
+      }
+    );
+
+
     setProgress(null);
 
+
     setStatus(
-      "Error: "
+      "Error — the record was created, but OCR failed: "
       +
       (
         error?.message ||
@@ -1171,9 +1045,9 @@ async function processImage(file) {
 }
 
 
-/* -----------------------------------------
+/* -----------------------------
    RECORD LIST
------------------------------------------ */
+----------------------------- */
 
 function renderRecords() {
 
@@ -1187,7 +1061,7 @@ function renderRecords() {
   if (!records.length) {
 
     container.innerHTML =
-      '<div class="empty">No records yet. Add a photo above.</div>';
+      '<div class="empty">No records yet. Add a photo or create a demo record.</div>';
 
     return;
 
@@ -1234,12 +1108,19 @@ function renderRecords() {
 
             </div>
 
-            <span class="badge">
-              ${
-                new Date(
-                  record.createdAt
+            <span
+              class="badge ${
+                esc(
+                  record.status ||
+                  ""
                 )
-                .toLocaleDateString()
+              }"
+            >
+              ${
+                esc(
+                  record.status ||
+                  "saved"
+                )
               }
             </span>
 
@@ -1327,9 +1208,9 @@ function renderRecords() {
 }
 
 
-/* -----------------------------------------
-   RECORD DETAIL VIEW
------------------------------------------ */
+/* -----------------------------
+   RECORD DETAIL
+----------------------------- */
 
 function openRecord(id) {
 
@@ -1358,6 +1239,14 @@ function openRecord(id) {
     record.company ||
     "";
 
+  $("detailStatus").textContent =
+    record.status +
+    (
+      record.error
+      ? " — " + record.error
+      : ""
+    );
+
   $("detailTitle").textContent =
     record.title ||
     "Not detected";
@@ -1384,7 +1273,8 @@ function openRecord(id) {
 
   $("detailOCR").textContent =
     record.rawOCR ||
-    "";
+    record.error ||
+    "No OCR text yet.";
 
 
   $("modal")
@@ -1402,13 +1292,12 @@ function closeModal() {
 
   currentDetailId =
     null;
-
 }
 
 
-/* -----------------------------------------
+/* -----------------------------
    EVENTS
------------------------------------------ */
+----------------------------- */
 
 $("photo")
 .addEventListener(
@@ -1433,6 +1322,86 @@ $("photo")
 
 
     processImage(file);
+
+  }
+);
+
+
+/* -----------------------------
+   DEMO RECORD
+----------------------------- */
+
+$("demoButton")
+.addEventListener(
+  "click",
+  () => {
+
+    const demo = {
+
+      id:
+        makeId(),
+
+      createdAt:
+        new Date()
+        .toISOString(),
+
+      sourceFile:
+        "Demo",
+
+      name:
+        "Jordan Smith",
+
+      company:
+        "Northstar Benefits",
+
+      title:
+        "HR Director",
+
+      email:
+        "jordan@northstarbenefits.com",
+
+      phone:
+        "414-555-0199",
+
+      notes:
+        "Interested in pricing and asked for a proposal.",
+
+      rawOCR:
+        "Jordan Smith\nHR Director\nNorthstar Benefits\njordan@northstarbenefits.com\n414-555-0199\nInterested in pricing. Please send proposal.",
+
+      nextStep:
+        "Send pricing / proposal today",
+
+      nextReason:
+        "Pricing or proposal language was detected.",
+
+      status:
+        "ready",
+
+      error:
+        ""
+
+    };
+
+
+    const records =
+      loadRecords();
+
+    records.unshift(
+      demo
+    );
+
+    saveRecords(
+      records
+    );
+
+    renderRecords();
+
+
+    setStatus(
+      "Demo record created successfully. Local storage and record rendering are working.",
+      "good"
+    );
 
   }
 );
@@ -1478,9 +1447,7 @@ $("deleteRecord")
         "Delete this CRM record?"
       )
     ) {
-
       return;
-
     }
 
 
@@ -1495,7 +1462,6 @@ $("deleteRecord")
 
 
     closeModal();
-
     renderRecords();
 
   }
@@ -1519,6 +1485,7 @@ $("clearAll")
 
       renderRecords();
 
+
       setStatus(
         "All test records cleared.",
         "warn"
@@ -1530,9 +1497,9 @@ $("clearAll")
 );
 
 
-/* -----------------------------------------
+/* -----------------------------
    CSV EXPORT
------------------------------------------ */
+----------------------------- */
 
 $("exportCSV")
 .addEventListener(
@@ -1562,6 +1529,7 @@ $("exportCSV")
         "Title",
         "Email",
         "Phone",
+        "Status",
         "Next Step",
         "Reason",
         "Notes",
@@ -1576,6 +1544,7 @@ $("exportCSV")
           record.title,
           record.email,
           record.phone,
+          record.status,
           record.nextStep,
           record.nextReason,
           record.notes,
